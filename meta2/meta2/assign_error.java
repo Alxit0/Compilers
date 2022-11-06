@@ -4,3 +4,20 @@ class assign_error {
   }
 }
 
+/*
+ID
+    ASSIGN
+        ID
+            ASSIGN
+                ID
+                    AND
+                        ID
+                            ASSIGN
+                                ID
+
+f(i = (j = ((a && b) = j)))
+
+f(i = (j = (a && (b = j))))  esta a fazer
+
+ID ASSIGN (ID ASSIGN (ID AND (ID ASSIGN ID)))
+ */

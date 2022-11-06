@@ -159,7 +159,7 @@ int main(int argc, char *argv[]){
             yyparse();
             // printf("mensagens de erro");
         }
-        if (strcmp(argv[1], "-e1")==0){
+        if (strcmp(argv[1], "-e2")==0){
             yyparse();
             // printf("mensagens de erro");
         }
@@ -189,5 +189,5 @@ return 1;
 }
 
 void yyerror(char *s){
-    printf("Line %d col %d: %s", line, pos, s);
+    printf("Line %d col %d: %s: %s\n", line, (int)( pos - strlen(yytext)), s, yytext);
 }
