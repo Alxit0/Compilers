@@ -48,26 +48,30 @@
 %token LSHIFT
 %token RSHIFT
 %token DOTLENGTH
-%token BOOLLIT
 
 %union{
 	struct Node *tree;
 	char *string;
 }
 
-%token <string> ID STRLIT REALLIT INTLIT RESERVED
+%token <string> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED
 /* %type <tree> program declarations varDeclaration varSpec commaID type funcDeclaration parameters comma_ID_Type funcBody varsAndStatements statement state_SEMI parseArgs funcInvocation comma_Expr expr */
 
 //Variables
 %right ASSIGN
+%right NOT
+
+%left COMMA
 %left OR
-%left AND
+%left AND XOR
 %left EQ NE LT LE GT GE
 %left PLUS MINUS
 %left STAR DIV MOD
-%right LSHIFT RSHIFT
-%right NOT
-%right XOR
+%left LSHIFT RSHIFT
+%left LSQ RSQ LPAR RPAR
+
+
+%nonassoc ELSE IF WHILE
 
 %%
 Program: CLASS ID LBRACE Aux1 RBRACE
@@ -117,19 +121,19 @@ Aux4: /* vazio */
 
 VarDecl: Type ID Aux2 SEMICOLON
 
-Statement: /* vazio */
-    | LBRACE Statement RBRACE
-    | Statement IF LPAR Expr RPAR Statement ELSE Statement 
-    | Statement IF LPAR Expr RPAR Statement
-    | Statement WHILE LPAR Expr RPAR Statement
-    | Statement RETURN Expr SEMICOLON
-    | Statement RETURN SEMICOLON
-    | Statement SEMICOLON
-    | Statement MethodInvocation SEMICOLON
-    | Statement Assignment SEMICOLON
-    | Statement ParseArgs SEMICOLON
-    | Statement PRINT LPAR STRLIT RPAR SEMICOLON
-    | Statement PRINT LPAR Expr RPAR SEMICOLON
+Statement: LBRACE Statement RBRACE
+    | LBRACE RBRACE
+    | IF LPAR Expr RPAR Statement ELSE Statement 
+    | IF LPAR Expr RPAR Statement
+    | WHILE LPAR Expr RPAR Statement
+    | RETURN Expr SEMICOLON
+    | RETURN SEMICOLON
+    | SEMICOLON
+    | MethodInvocation SEMICOLON
+    | Assignment SEMICOLON
+    | ParseArgs SEMICOLON
+    | PRINT LPAR STRLIT RPAR SEMICOLON
+    | PRINT LPAR Expr RPAR SEMICOLON
     | error SEMICOLON
     ;
 
