@@ -64,14 +64,16 @@
 %right NOT
 
 %left COMMA
+%left XOR
 %left OR
-%left AND XOR
-%left EQ NE LT LE GT GE
+%left AND
+%left EQ NE 
+%left LT LE GT GE
+%left LSHIFT RSHIFT
 %left PLUS MINUS
 %left STAR DIV MOD
-%left LSHIFT RSHIFT
 %left LSQ RSQ LPAR RPAR
-
+%left AUX1 AUX2
 
 %nonassoc ELSE IF WHILE
 
@@ -154,28 +156,30 @@ ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR
     | PARSEINT LPAR error RPAR
     ;
 
-Expr: Expr MOD Expr
-    | Expr DIV Expr
-    | Expr STAR Expr
-    | Expr MINUS Expr
-    | Expr PLUS Expr
-    | Expr AND Expr
-    | Expr OR Expr
-    | Expr XOR Expr
-    | Expr LSHIFT Expr
-    | Expr RSHIFT Expr
-    | Expr EQ Expr
-    | Expr GE Expr
-    | Expr GT Expr
-    | Expr LE Expr
-    | Expr LT Expr
-    | Expr NE Expr
-    | MINUS Expr
-    | NOT Expr
-    | PLUS Expr
+Expr: Assignment
+    | Expr2
+
+Expr2: Expr2 MOD Expr2
+    | Expr2 DIV Expr2
+    | Expr2 STAR Expr2
+    | Expr2 MINUS Expr2
+    | Expr2 PLUS Expr2
+    | Expr2 AND Expr2
+    | Expr2 OR Expr2
+    | Expr2 XOR Expr2
+    | Expr2 LSHIFT Expr2
+    | Expr2 RSHIFT Expr2
+    | Expr2 EQ Expr2
+    | Expr2 GE Expr2
+    | Expr2 GT Expr2
+    | Expr2 LE Expr2
+    | Expr2 LT Expr2
+    | Expr2 NE Expr2
+    | MINUS Expr2 %prec AUX1
+    | NOT Expr2 
+    | PLUS Expr2 %prec AUX2
     | LPAR Expr RPAR
     | MethodInvocation 
-    | Assignment 
     | ParseArgs
     | ID DOTLENGTH
     | ID

@@ -5,19 +5,30 @@ class assign_error {
 }
 
 /*
-ID
-    ASSIGN
-        ID
-            ASSIGN
-                ID
-                    AND
-                        ID
-                            ASSIGN
-                                ID
-
-f(i = (j = ((a && b) = j)))
-
-f(i = (j = (a && (b = j))))  esta a fazer
-
-ID ASSIGN (ID ASSIGN (ID AND (ID ASSIGN ID)))
- */
+0
+1
+3
+5
+6
+10
+14
+    18
+    21
+    25
+    31
+    54
+    86
+    123
+20
+    23
+    29
+    ID 47
+    LPAR 80
+    ID(i) 67
+    ASSIGN 81
+    ID(j) 67
+    ASSIGN 81
+        ID(a) 67
+    120
+    AND 104
+*/
