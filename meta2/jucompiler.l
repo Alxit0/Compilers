@@ -16,7 +16,7 @@ int string_pos = 0;
 int temp_line = 0;
 char string_buff[100000];
 bool error_found = false;
-void yyparse();
+int yyparse(void);
 %}
 
 %X COMMENT_LINE COMMENT_BLOCK STRING_STATE
@@ -80,6 +80,7 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 "/*"                                    {BEGIN COMMENT_BLOCK; in_state=1;pos_extra=pos; temp_line=line; pos+=2;}
 <COMMENT_BLOCK>"*/"                     {BEGIN 0;pos+=2;in_state=0;}
 <COMMENT_BLOCK>{PARAGRAPH_ESCAPE}       {pos=1;line++;}
+<COMMENT_BLOCK><<EOF>>                  {BEGIN 0; printf("Line %d, col %d: unterminated comment\n", temp_line, pos_extra);}
 <COMMENT_BLOCK>.                        {pos++;}
 
 "\""                                            {BEGIN STRING_STATE; pos_extra = pos; pos++;error_found=false;in_state=2;string_pos=0;}
@@ -88,6 +89,7 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 <STRING_STATE>"\\"[^"fnrt\\\""]                       {error_found=true; printf("Line %d, col %d: invalid escape sequence (%s)\n", line, pos, yytext);pos+=2;}
 <STRING_STATE>"\\"["fnrt\\\""]                        {pos+=2;string_buff[string_pos++]=yytext[0];string_buff[string_pos++]=yytext[1];}
 <STRING_STATE>{PARAGRAPH_ESCAPE}                      {BEGIN 0; in_state=0; printf("Line %d, col %d: unterminated string literal\n", line, pos_extra);line++;pos=1;}
+<STRING_STATE><<EOF>>                                 {BEGIN 0; printf("Line %d, col %d: unterminated string literal\n", line, pos);}
 <STRING_STATE>.                                       {pos++;string_buff[string_pos++]=yytext[0];}
 
 {AND}                       {if(show_tokens)printf("AND\n");pos+=yyleng;if(return_stf)return AND;}
@@ -145,7 +147,8 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 
 %%
 int main(int argc, char *argv[]){
-    
+    bool do_parse = false;
+    bool show_tree = false;
     if (argc == 2){
         if (strcmp(argv[1],"-l") == 0){
             show_tokens = true;
@@ -186,10 +189,10 @@ int main(int argc, char *argv[]){
     }
 
 
-    if (in_state == 1)
-        printf("Line %d, col %d: unterminated comment\n", temp_line, pos_extra);
-    else if (in_state == 2)
-        printf("Line %d, col %d: unterminated string literal\n", line, pos_extra);
+    // if (in_state == 1)
+    //     printf("Line %d, col %d: unterminated comment\n", temp_line, pos_extra);
+    // else if (in_state == 2)
+    //     printf("Line %d, col %d: unterminated string literal\n", line, pos_extra);
 
     return 0;
 }
@@ -199,7 +202,10 @@ int yywrap()
 return 1;
 }
 
-void yyerror(char *s){
+void yyerror(const char *s){
     // syntax_error_found = true;
-    printf("Line %d, col %d: %s: %s\n", line, (int)( pos - strlen(yytext)), s, yytext);
+    if (yytext[0] == '"')
+        printf("Line %d, col %d: %s: \"%s\"\n", line, (int)( pos -2 - strlen(string_buff)), s, string_buff);
+    else
+        printf("Line %d, col %d: %s: %s\n", line, (int)( pos - strlen(yytext)), s, yytext);
 }

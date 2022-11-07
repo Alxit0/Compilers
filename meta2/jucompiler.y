@@ -69,9 +69,9 @@
 %right ASSIGN
 
 %left COMMA
-%left XOR
 %left OR
 %left AND
+%left XOR
 %left EQ NE 
 %left LT LE GT GE
 %left LSHIFT RSHIFT
@@ -79,7 +79,7 @@
 %left STAR DIV MOD
 %right NOT
 %left LSQ RSQ LPAR RPAR
-%left AUX1 AUX2
+
 
 %nonassoc ELSE
 
@@ -131,18 +131,21 @@ MethodHeader: Type ID LPAR FormalParams RPAR    {
 FormalParams: Type ID Aux3          {
                                         Node *node_aux = new_node("Id", $2, NULL);
                                         if($1 != NULL)node_aux = new_brother($1, node_aux);
-                                        $$ = new_node("ParamDecl", NULL, new_brother(node_aux, $3));
+                                        $$ = new_brother(new_node("ParamDecl", NULL, node_aux), $3);
                                     }
     | STRING LSQ RSQ ID             {
                                         $$ = new_node("ParamDecl", NULL, new_brother(new_node("StringArray", NULL, NULL), new_node("Id", $4, NULL)));
                                     }
+    ;
 
 Aux3: /* vazio */                   {$$ = NULL;}
     | Aux3 COMMA Type ID            {
                                         Node *node_aux = new_node("Id", $4, NULL);
-                                        if($3 != NULL)node_aux = new_brother($3, node_aux);
-                                        if($1 != NULL)node_aux = new_brother($1, node_aux);
-                                        $$ = node_aux;
+                                        node_aux = new_brother($3, node_aux);
+                                        if($1 == NULL)$$ = new_node("ParamDecl", NULL, node_aux);
+                                        else $$ = new_brother($1, new_node("ParamDecl", NULL, node_aux));
+                                        // if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                        // $$ = new_brother(new_node("ParamDecl", NULL, NULL), node_aux);
                                     }
     ;
 
@@ -155,12 +158,29 @@ Aux4: /* vazio */           {$$ = NULL;}
 
 VarDecl: Type ID Aux2 SEMICOLON     {
                                         Node *node_aux = new_node("Id", $2, NULL);
-                                        if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                        // if($1 != NULL)node_aux = new_brother($1, node_aux);
                                         if($3 != NULL)node_aux = new_brother(node_aux, $3);
-                                        $$ = new_node("VarDecl", NULL, node_aux);
+                                        // printf(">> %s %s\n\n", node_aux->nodeType, node_aux->brother->nodeType);
+                                        Node *temp = new_node("", NULL, NULL);
+                                        while(node_aux != NULL){
+                                            // printf(">> %s ", node_aux->nodeType);
+                                            Node *a = new_node($1->nodeType, NULL, NULL);
+                                            a = new_brother(a, new_node(node_aux->nodeType, node_aux->nodeValue, NULL));
+                                            Node *b = new_node("VarDecl", NULL, a);
+                                            temp = new_brother(temp, b);
+                                            node_aux = node_aux->brother;
+                                        }
+                                        // printf("\n\n");
+                                        $$ = temp->brother;
                                     }
 
 Statement: LBRACE Statement2 RBRACE                  {$$ = new_node("Block", NULL, $2);}
+    | IF LPAR Expr RPAR Statement %prec ELSE                  {
+                                                        Node *node_aux = $3;
+                                                        if($3 == NULL)node_aux = $5;
+                                                        else node_aux = new_brother($3, $5);
+                                                        $$ = new_node("If", NULL, new_brother(node_aux, new_node("Block", NULL, NULL)));
+                                                    }
     | IF LPAR Expr RPAR Statement ELSE Statement    {
                                                         Node *node_aux = $3;
                                                         if($3 == NULL)node_aux = $5;
@@ -168,12 +188,6 @@ Statement: LBRACE Statement2 RBRACE                  {$$ = new_node("Block", NUL
                                                         if($5 == NULL)node_aux = $7;
                                                         else node_aux = new_brother($3, $7);
                                                         $$ = new_node("If", NULL, node_aux);
-                                                    }
-    | IF LPAR Expr RPAR Statement %prec ELSE                  {
-                                                        Node *node_aux = $3;
-                                                        if($3 == NULL)node_aux = $5;
-                                                        else node_aux = new_brother($3, $5);
-                                                        $$ = new_node("If", NULL, new_brother(node_aux, new_node("Block", NULL, NULL)));
                                                     }
     | WHILE LPAR Expr RPAR Statement                {
                                                         Node *node_aux = $3;
@@ -218,6 +232,7 @@ ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR       {$$ = new_node("ParseArgs", 
 
 Expr: Assignment        {$$ = $1;}
     | Expr2             {$$ = $1;}
+    ;
 
 Expr2: Expr2 MOD Expr2          {if($1 == NULL)$$ = $3;else $$ = new_node("Mod", NULL, new_brother($1, $3));}
     | Expr2 DIV Expr2           {if($1 == NULL)$$ = $3;else $$ = new_node("Div", NULL, new_brother($1, $3));}
@@ -235,9 +250,9 @@ Expr2: Expr2 MOD Expr2          {if($1 == NULL)$$ = $3;else $$ = new_node("Mod",
     | Expr2 LE Expr2            {if($1 == NULL)$$ = $3;else $$ = new_node("Le", NULL, new_brother($1, $3));}
     | Expr2 LT Expr2            {if($1 == NULL)$$ = $3;else $$ = new_node("Lt", NULL, new_brother($1, $3));}
     | Expr2 NE Expr2            {if($1 == NULL)$$ = $3;else $$ = new_node("Ne", NULL, new_brother($1, $3));}
-    | MINUS Expr2 %prec AUX1    {$$ = new_node("Minus", NULL, $2);}
+    | MINUS Expr2 %prec NOT    {$$ = new_node("Minus", NULL, $2);}
     | NOT Expr2                 {$$ = new_node("Not", NULL, $2);}
-    | PLUS Expr2 %prec AUX2     {$$ = new_node("Plus", NULL, $2);}
+    | PLUS Expr2 %prec NOT     {$$ = new_node("Plus", NULL, $2);}
     | LPAR Expr RPAR            {$$ = $2;}
     | MethodInvocation          {$$ = $1;}
     | ParseArgs                 {$$ = $1;}

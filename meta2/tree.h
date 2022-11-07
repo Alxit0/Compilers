@@ -5,10 +5,10 @@
 //Structs
 typedef struct Node
 {
-	char* nodeType;
-	char* nodeValue;
-	struct Node *son;
-	struct Node *brother;
+    char* nodeType;
+    char* nodeValue;
+    struct Node *son;
+    struct Node *brother;
 } Node;
 
 Node *new_node(char *type, char *value, Node *son);
