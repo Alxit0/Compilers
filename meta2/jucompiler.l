@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "y.tab.h"
+#include "tree.h"
+extern struct Node* root;
 int pos = 1;
 int line = 1;
 bool show_errors = false;
@@ -80,7 +82,7 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 <COMMENT_BLOCK>.                        {pos++;}
 
 "\""                                            {BEGIN STRING_STATE; pos_extra = pos; pos++;error_found=false;in_state=2;string_pos=0;}
-<STRING_STATE>\"                                      {BEGIN 0; in_state=0; pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);}
+<STRING_STATE>\"                                      {BEGIN 0; in_state=0; pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);yylval.string=strdup(string_buff);return STRLIT;}
 <STRING_STATE>"\\"({PARAGRAPH_ESCAPE})                {BEGIN 0; in_state=0; printf("Line %d, col %d: invalid escape sequence (\\)\n", line, pos); printf("Line %d, col %d: unterminated string literal\n", line, pos_extra); line++; pos = 1;}
 <STRING_STATE>"\\"[^"fnrt\\\""]                       {error_found=true; printf("Line %d, col %d: invalid escape sequence (%s)\n", line, pos, yytext);pos+=2;}
 <STRING_STATE>"\\"["fnrt\\\""]                        {pos+=2;string_buff[string_pos++]=yytext[0];string_buff[string_pos++]=yytext[1];}
@@ -134,7 +136,7 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 {REALLIT}                   {if(show_tokens)printf("REALLIT(%s)\n",yytext);pos+=yyleng;return REALLIT;}
 {BOOLLIT}                   {if(show_tokens)printf("BOOLLIT(%s)\n", yytext);pos+=yyleng;return BOOLLIT;}
 {RESERVED}                  {if(show_tokens)printf("RESERVED(%s)\n", yytext);pos+=yyleng;}
-{ID}                        {if(show_tokens)printf("ID(%s)\n",yytext);pos+=yyleng;return ID;}
+{ID}                        {if(show_tokens)printf("ID(%s)\n",yytext);pos+=yyleng;yylval.string = strdup(yytext);return ID;}
 
 ["\t\f "]                   {pos+=1;} 
 {PARAGRAPH_ESCAPE}          {line++;pos=1;}
@@ -174,7 +176,10 @@ int main(int argc, char *argv[]){
         printf("erro");
         return 0;
     }
-
+    print_tree(root, 0);
+    if(root != NULL){
+        cleanTree(root);
+    }
     if (in_state == 1)
         printf("Line %d, col %d: unterminated comment\n", temp_line, pos_extra);
     else if (in_state == 2)

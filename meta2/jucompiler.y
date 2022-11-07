@@ -1,6 +1,10 @@
 %{
     #include <stdio.h>
     #include <stdlib.h>
+    #include "tree.h"
+    Node *root;
+    Node *auxNode;
+    Node *auxNode2;
 
     int yylex(void);
     void yyerror(char *s);
@@ -57,7 +61,7 @@
 }
 
 %token <string> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED
-/* %type <tree> program declarations varDeclaration varSpec commaID type funcDeclaration parameters comma_ID_Type funcBody varsAndStatements statement state_SEMI parseArgs funcInvocation comma_Expr expr */
+%type <tree> Program Aux1 MethodDecl FieldDecl Aux2 Type MethodHeader FormalParams Aux3 MethodBody Aux4 VarDecl Statement MethodInvocation Aux5 Assignment ParseArgs Expr Expr2
 
 //Variables
 %right ASSIGN
@@ -78,115 +82,165 @@
 %nonassoc ELSE IF WHILE
 
 %%
-Program: CLASS ID LBRACE Aux1 RBRACE
+Program: CLASS ID LBRACE Aux1 RBRACE    {root = new_node("Program", NULL, new_brother(new_node("Id", $2, NULL), $4));}
 
-Aux1: /* vazio */
-    | Aux1 MethodDecl 
-    | Aux1 FieldDecl 
-    | Aux1 SEMICOLON
+Aux1: /* vazio */       {$$ = NULL;}
+    | Aux1 MethodDecl                   {if ($1 == NULL)$$ = $2;else $$ = new_brother($1, $2);}
+    | Aux1 FieldDecl                    {if ($1 == NULL)$$ = $2;else $$ = new_brother($1, $2);}
+    | Aux1 SEMICOLON                    {$$ = $1;}
     ; 
 
 
-MethodDecl: PUBLIC STATIC MethodHeader MethodBody
+MethodDecl: PUBLIC STATIC MethodHeader MethodBody   {if($3 == NULL)$$ = $4;else $$ = new_node("MethodDecl", NULL, new_brother($3, $4));}
 
-FieldDecl: PUBLIC STATIC Type ID Aux2 SEMICOLON
-    | error SEMICOLON
+FieldDecl: PUBLIC STATIC Type ID Aux2 SEMICOLON     {
+                                                        Node* node_aux = new_node("Id", $4, NULL);
+                                                        if($3 != NULL)node_aux = new_brother($3, node_aux);
+                                                        $$ = new_node("FieldDecl", NULL, new_brother(node_aux, $5));
+                                                    }
+    | error SEMICOLON                               {$$ = NULL;}
     ;
 
-Aux2: COMMA ID Aux2
-    | /* vazio */
+Aux2: COMMA ID Aux2             {$$ = new_brother(new_node("Id", $2, NULL), $3);}
+    | /* vazio */               {$$ = NULL;}
     ;
 
-Type: BOOL 
-    | INT 
-    | DOUBLE
+Type: BOOL              {$$ = new_node("Bool", NULL, NULL);}
+    | INT               {$$ = new_node("Int", NULL, NULL);}
+    | DOUBLE            {$$ = new_node("Double", NULL, NULL);}
     ;
 
-MethodHeader: Type ID LPAR FormalParams RPAR
-    | VOID ID LPAR FormalParams RPAR
-    | Type ID LPAR RPAR
-    | VOID ID LPAR RPAR
+MethodHeader: Type ID LPAR FormalParams RPAR    {
+                                                    Node *node_aux = new_node("Id", $2, NULL);
+                                                    if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                                    $$ = new_node("MethodHeader", NULL, new_brother(node_aux, $4));
+                                                }
+    | VOID ID LPAR FormalParams RPAR            {$$ = new_node("MethodHeader", NULL, new_brother(new_node("Id", $2, NULL), $4));}
+    | Type ID LPAR RPAR                         {
+                                                    Node *node_aux = new_node("Id", $2, NULL);
+                                                    if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                                    $$ = new_node("MethodHeader", NULL, node_aux);
+                                                }
+    | VOID ID LPAR RPAR                         {$$ = new_node("MethodHeader", NULL, new_node("Id", $2, NULL));}
     ;
 
 
-FormalParams: Type ID Aux3
-    | STRING LSQ RSQ ID
+FormalParams: Type ID Aux3          {
+                                        Node *node_aux = new_node("Id", $2, NULL);
+                                        if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                        $$ = new_node("MethodParams", NULL, new_brother(node_aux, $3));
+                                    }
+    | STRING LSQ RSQ ID             {
+                                        $$ = new_node("MethodParams", NULL, new_node("Id", $4, NULL));
+                                    }
 
-Aux3: /* vazio */
-    | Aux3 COMMA Type ID
+Aux3: /* vazio */                   {$$ = NULL;}
+    | Aux3 COMMA Type ID            {
+                                        Node *node_aux = new_node("Id", $4, NULL);
+                                        if($3 != NULL)node_aux = new_brother($3, node_aux);
+                                        if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                        $$ = node_aux;
+                                    }
     ;
 
-MethodBody: LBRACE Aux4 RBRACE
+MethodBody: LBRACE Aux4 RBRACE      {$$ = new_node("MethodBody", NULL, $2);}
 
-Aux4: /* vazio */
-    | Aux4 Statement
-    | Aux4 VarDecl
+Aux4: /* vazio */           {$$ = NULL;}
+    | Aux4 Statement        {if($1 == NULL)$$ = $2;else $$ = new_brother($1, $2);}
+    | Aux4 VarDecl          {if($1 == NULL)$$ = $2;else $$ = new_brother($1, $2);}
     ;
 
-VarDecl: Type ID Aux2 SEMICOLON
+VarDecl: Type ID Aux2 SEMICOLON     {
+                                        Node *node_aux = new_node("Id", $2, NULL);
+                                        if($1 != NULL)node_aux = new_brother($1, node_aux);
+                                        if($3 != NULL)node_aux = new_brother(node_aux, $3);
+                                        $$ = new_node("VarDecl", NULL, node_aux);
+                                    }
 
-Statement: LBRACE Statement RBRACE
-    | LBRACE RBRACE
-    | IF LPAR Expr RPAR Statement ELSE Statement 
-    | IF LPAR Expr RPAR Statement
-    | WHILE LPAR Expr RPAR Statement
-    | RETURN Expr SEMICOLON
-    | RETURN SEMICOLON
-    | SEMICOLON
-    | MethodInvocation SEMICOLON
-    | Assignment SEMICOLON
-    | ParseArgs SEMICOLON
-    | PRINT LPAR STRLIT RPAR SEMICOLON
-    | PRINT LPAR Expr RPAR SEMICOLON
-    | error SEMICOLON
+Statement: LBRACE Statement RBRACE                  {$$ = new_node("Statement", NULL, $2);}
+    | LBRACE RBRACE                                 {$$ = new_node("Statement", NULL, NULL);}
+    | IF LPAR Expr RPAR Statement ELSE Statement    {
+                                                        Node *node_aux = $3;
+                                                        if($3 == NULL)node_aux = $5;
+                                                        else node_aux = new_brother($3, $5);
+                                                        if($5 == NULL)node_aux = $7;
+                                                        else node_aux = new_brother($3, $7);
+                                                        $$ = new_node("Statement", NULL, node_aux);
+                                                    }
+    | IF LPAR Expr RPAR Statement                   {
+                                                        Node *node_aux = $3;
+                                                        if($3 == NULL)node_aux = $5;
+                                                        else node_aux = new_brother($3, $5);
+                                                        $$ = new_node("Statement", NULL, node_aux);
+                                                    }
+    | WHILE LPAR Expr RPAR Statement                {
+                                                        Node *node_aux = $3;
+                                                        if($3 == NULL)node_aux = $5;
+                                                        else node_aux = new_brother($3, $5);
+                                                        $$ = new_node("Statement", NULL, node_aux);
+                                                    }
+    | RETURN Expr SEMICOLON                         {$$ = new_node("Statement", NULL, $2);}
+    | RETURN SEMICOLON                              {$$ = new_node("Statement", NULL, NULL);}
+    | SEMICOLON                                     {$$ = new_node("Statement", NULL, NULL);}
+    | MethodInvocation SEMICOLON                    {$$ = new_node("Statement", NULL, $1);}
+    | Assignment SEMICOLON                          {$$ = new_node("Statement", NULL, $1);}
+    | ParseArgs SEMICOLON                           {$$ = new_node("Statement", NULL, $1);}
+    | PRINT LPAR STRLIT RPAR SEMICOLON              {$$ = new_node("Statement", NULL, NULL);}
+    | PRINT LPAR Expr RPAR SEMICOLON                {$$ = new_node("Statement", NULL, $3);}
+    | error SEMICOLON                               {$$ = NULL;}
     ;
 
-MethodInvocation: ID LPAR Expr Aux5 RPAR
-    | ID LPAR RPAR
-    | ID LBRACE error RPAR
+MethodInvocation: ID LPAR Expr Aux5 RPAR        {
+                                                    Node *node_aux = new_node("Id", $1, NULL);
+                                                    if($3 != NULL)node_aux = new_brother(node_aux, $3);
+                                                    if($4 != NULL)node_aux = new_brother(node_aux, $4);
+                                                    $$ = new_node("MethodInvocation", NULL, node_aux);
+                                                }
+    | ID LPAR RPAR                              {$$ = new_node("MethodInvocation", NULL, NULL);}
+    | ID LBRACE error RPAR                      {$$ = NULL;}
     ;
 
-Aux5: /* vazio */
-    | Aux5 COMMA Expr
+Aux5: /* vazio */       {$$ = NULL;}
+    | Aux5 COMMA Expr   {if($1 == NULL)$$ = $3;else $$ = new_brother($1, $3);}
     ;
 
-Assignment: ID ASSIGN Expr
+Assignment: ID ASSIGN Expr  {$$ = new_brother(new_node("Id", $1, NULL), $3);}
 
-ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR
-    | PARSEINT LPAR error RPAR
+ParseArgs: PARSEINT LPAR ID LSQ Expr RSQ RPAR       {$$ = new_brother(new_node("Id", $3, NULL), $5);}
+    | PARSEINT LPAR error RPAR                      {$$ = NULL;}
     ;
 
-Expr: Assignment
-    | Expr2
+Expr: Assignment        {$$ = new_node("Expr", NULL, $1);}
+    | Expr2             {$$ = new_node("Expr", NULL, $1);}
 
-Expr2: Expr2 MOD Expr2
-    | Expr2 DIV Expr2
-    | Expr2 STAR Expr2
-    | Expr2 MINUS Expr2
-    | Expr2 PLUS Expr2
-    | Expr2 AND Expr2
-    | Expr2 OR Expr2
-    | Expr2 XOR Expr2
-    | Expr2 LSHIFT Expr2
-    | Expr2 RSHIFT Expr2
-    | Expr2 EQ Expr2
-    | Expr2 GE Expr2
-    | Expr2 GT Expr2
-    | Expr2 LE Expr2
-    | Expr2 LT Expr2
-    | Expr2 NE Expr2
-    | MINUS Expr2 %prec AUX1
-    | NOT Expr2 
-    | PLUS Expr2 %prec AUX2
-    | LPAR Expr RPAR
-    | MethodInvocation 
-    | ParseArgs
-    | ID DOTLENGTH
-    | ID
-    | INTLIT 
-    | REALLIT 
-    | BOOLLIT
-    | LPAR error RPAR
+Expr2: Expr2 MOD Expr2          {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 DIV Expr2           {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 STAR Expr2          {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 MINUS Expr2         {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 PLUS Expr2          {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 AND Expr2           {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 OR Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 XOR Expr2           {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 LSHIFT Expr2        {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 RSHIFT Expr2        {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 EQ Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 GE Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 GT Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 LE Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 LT Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | Expr2 NE Expr2            {if($1 == NULL)$$ = $3;else new_brother($1, $3);}
+    | MINUS Expr2 %prec AUX1    {$$ = $2;}
+    | NOT Expr2                 {$$ = $2;}
+    | PLUS Expr2 %prec AUX2     {$$ = $2;}
+    | LPAR Expr RPAR            {$$ = $2;}
+    | MethodInvocation          {$$ = $1;}
+    | ParseArgs                 {$$ = $1;}
+    | ID DOTLENGTH              {$$ = NULL;}
+    | ID                        {$$ = new_node("Id", $1, NULL);}
+    | INTLIT                    {$$ = new_node("DecLit", $1, NULL);}
+    | REALLIT                   {$$ = new_node("RealLit", $1, NULL);}
+    | BOOLLIT                   {$$ = new_node("BoolLit", $1, NULL);}
+    | LPAR error RPAR           {$$ = NULL;}
     ;
 %%
 
