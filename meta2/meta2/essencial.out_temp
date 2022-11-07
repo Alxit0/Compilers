@@ -1,0 +1,7 @@
+Program
+..Id(Teste)
+..MethodDecl
+....MethodHeader
+......Void
+......Id(main)
+....MethodBody
