@@ -7,8 +7,9 @@
 extern struct Node* root;
 int pos = 1;
 int line = 1;
-bool show_errors = false;
 bool show_tokens = false;
+bool return_stf = false;
+bool syntax_error_found = false;
 int in_state = 0;
 int pos_extra = 0;
 int string_pos = 0;
@@ -82,61 +83,61 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 <COMMENT_BLOCK>.                        {pos++;}
 
 "\""                                            {BEGIN STRING_STATE; pos_extra = pos; pos++;error_found=false;in_state=2;string_pos=0;}
-<STRING_STATE>\"                                      {BEGIN 0; in_state=0; pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);yylval.string=strdup(string_buff);return STRLIT;}
+<STRING_STATE>\"                                      {BEGIN 0; in_state=0; pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);yylval.string=strdup(string_buff);if(return_stf)return STRLIT;}
 <STRING_STATE>"\\"({PARAGRAPH_ESCAPE})                {BEGIN 0; in_state=0; printf("Line %d, col %d: invalid escape sequence (\\)\n", line, pos); printf("Line %d, col %d: unterminated string literal\n", line, pos_extra); line++; pos = 1;}
 <STRING_STATE>"\\"[^"fnrt\\\""]                       {error_found=true; printf("Line %d, col %d: invalid escape sequence (%s)\n", line, pos, yytext);pos+=2;}
 <STRING_STATE>"\\"["fnrt\\\""]                        {pos+=2;string_buff[string_pos++]=yytext[0];string_buff[string_pos++]=yytext[1];}
 <STRING_STATE>{PARAGRAPH_ESCAPE}                      {BEGIN 0; in_state=0; printf("Line %d, col %d: unterminated string literal\n", line, pos_extra);line++;pos=1;}
 <STRING_STATE>.                                       {pos++;string_buff[string_pos++]=yytext[0];}
 
-{AND}                       {if(show_tokens)printf("AND\n");pos+=yyleng;return AND;}
-{ASSIGN}                    {if(show_tokens)printf("ASSIGN\n");pos+=yyleng;return ASSIGN;}
-{STAR}                      {if(show_tokens)printf("STAR\n");pos+=yyleng;return STAR;}
-{COMMA}                     {if(show_tokens)printf("COMMA\n");pos+=yyleng;return COMMA;}
-{DIV}                       {if(show_tokens)printf("DIV\n");pos+=yyleng;return DIV;}
-{EQ}                        {if(show_tokens)printf("EQ\n");pos+=yyleng;return EQ;}
-{GE}                        {if(show_tokens)printf("GE\n");pos+=yyleng;return GE;}
-{GT}                        {if(show_tokens)printf("GT\n");pos+=yyleng;return GT;}
-{LBRACE}                    {if(show_tokens)printf("LBRACE\n");pos+=yyleng;return LBRACE;}
-{LE}                        {if(show_tokens)printf("LE\n");pos+=yyleng;return LE;}
-{LPAR}                      {if(show_tokens)printf("LPAR\n");pos+=yyleng;return LPAR;}
-{LSQ}                       {if(show_tokens)printf("LSQ\n");pos+=yyleng;return LSQ;}
-{LT}                        {if(show_tokens)printf("LT\n");pos+=yyleng;return LT;}
-{MINUS}                     {if(show_tokens)printf("MINUS\n");pos+=yyleng;return MINUS;}
-{MOD}                       {if(show_tokens)printf("MOD\n");pos+=yyleng;return MOD;}
-{NE}                        {if(show_tokens)printf("NE\n");pos+=yyleng;return NE;}
-{NOT}                       {if(show_tokens)printf("NOT\n");pos+=yyleng;return NOT;}
-{OR}                        {if(show_tokens)printf("OR\n");pos+=yyleng;return OR;}
-{PLUS}                      {if(show_tokens)printf("PLUS\n");pos+=yyleng;return PLUS;}
-{RBRACE}                    {if(show_tokens)printf("RBRACE\n");pos+=yyleng;return RBRACE;}
-{RPAR}                      {if(show_tokens)printf("RPAR\n");pos+=yyleng;return RPAR;}
-{RSQ}                       {if(show_tokens)printf("RSQ\n");pos+=yyleng;return RSQ;}
-{SEMICOLON}                 {if(show_tokens)printf("SEMICOLON\n");pos+=yyleng;return SEMICOLON;}
+{AND}                       {if(show_tokens)printf("AND\n");pos+=yyleng;if(return_stf)return AND;}
+{ASSIGN}                    {if(show_tokens)printf("ASSIGN\n");pos+=yyleng;if(return_stf)return ASSIGN;}
+{STAR}                      {if(show_tokens)printf("STAR\n");pos+=yyleng;if(return_stf)return STAR;}
+{COMMA}                     {if(show_tokens)printf("COMMA\n");pos+=yyleng;if(return_stf)return COMMA;}
+{DIV}                       {if(show_tokens)printf("DIV\n");pos+=yyleng;if(return_stf)return DIV;}
+{EQ}                        {if(show_tokens)printf("EQ\n");pos+=yyleng;if(return_stf)return EQ;}
+{GE}                        {if(show_tokens)printf("GE\n");pos+=yyleng;if(return_stf)return GE;}
+{GT}                        {if(show_tokens)printf("GT\n");pos+=yyleng;if(return_stf)return GT;}
+{LBRACE}                    {if(show_tokens)printf("LBRACE\n");pos+=yyleng;if(return_stf)return LBRACE;}
+{LE}                        {if(show_tokens)printf("LE\n");pos+=yyleng;if(return_stf)return LE;}
+{LPAR}                      {if(show_tokens)printf("LPAR\n");pos+=yyleng;if(return_stf)return LPAR;}
+{LSQ}                       {if(show_tokens)printf("LSQ\n");pos+=yyleng;if(return_stf)return LSQ;}
+{LT}                        {if(show_tokens)printf("LT\n");pos+=yyleng;if(return_stf)return LT;}
+{MINUS}                     {if(show_tokens)printf("MINUS\n");pos+=yyleng;if(return_stf)return MINUS;}
+{MOD}                       {if(show_tokens)printf("MOD\n");pos+=yyleng;if(return_stf)return MOD;}
+{NE}                        {if(show_tokens)printf("NE\n");pos+=yyleng;if(return_stf)return NE;}
+{NOT}                       {if(show_tokens)printf("NOT\n");pos+=yyleng;if(return_stf)return NOT;}
+{OR}                        {if(show_tokens)printf("OR\n");pos+=yyleng;if(return_stf)return OR;}
+{PLUS}                      {if(show_tokens)printf("PLUS\n");pos+=yyleng;if(return_stf)return PLUS;}
+{RBRACE}                    {if(show_tokens)printf("RBRACE\n");pos+=yyleng;if(return_stf)return RBRACE;}
+{RPAR}                      {if(show_tokens)printf("RPAR\n");pos+=yyleng;if(return_stf)return RPAR;}
+{RSQ}                       {if(show_tokens)printf("RSQ\n");pos+=yyleng;if(return_stf)return RSQ;}
+{SEMICOLON}                 {if(show_tokens)printf("SEMICOLON\n");pos+=yyleng;if(return_stf)return SEMICOLON;}
 {ARROW}                     {if(show_tokens)printf("ARROW\n");pos+=yyleng;}
-{LSHIFT}                    {if(show_tokens)printf("LSHIFT\n");pos+=yyleng;return LSHIFT;}
-{RSHIFT}                    {if(show_tokens)printf("RSHIFT\n");pos+=yyleng;return RSHIFT;}
-{XOR}                       {if(show_tokens)printf("XOR\n");pos+=yyleng;return XOR;}
-{BOOL}                      {if(show_tokens)printf("BOOL\n");pos+=yyleng;return BOOL;}
-{CLASS}                     {if(show_tokens)printf("CLASS\n");pos+=yyleng;return CLASS;}
-{DOTLENGTH}                 {if(show_tokens)printf("DOTLENGTH\n");pos+=yyleng;return DOTLENGTH;}
-{DOUBLE}                    {if(show_tokens)printf("DOUBLE\n");pos+=yyleng;return DOUBLE;}
-{ELSE}                      {if(show_tokens)printf("ELSE\n");pos+=yyleng;return ELSE;}
-{IF}                        {if(show_tokens)printf("IF\n");pos+=yyleng;return IF;}
-{INT}                       {if(show_tokens)printf("INT\n");pos+=yyleng;return INT;}
-{PRINT}                     {if(show_tokens)printf("PRINT\n");pos+=yyleng;return PRINT;}
-{PARSEINT}                  {if(show_tokens)printf("PARSEINT\n");pos+=yyleng;return PARSEINT;}
-{PUBLIC}                    {if(show_tokens)printf("PUBLIC\n");pos+=yyleng;return PUBLIC;}
-{RETURN}                    {if(show_tokens)printf("RETURN\n");pos+=yyleng;return RETURN;}
-{STATIC}                    {if(show_tokens)printf("STATIC\n");pos+=yyleng;return STATIC;}
-{STRING}                    {if(show_tokens)printf("STRING\n");pos+=yyleng;return STRING;}
-{VOID}                      {if(show_tokens)printf("VOID\n");pos+=yyleng;return VOID;}
-{WHILE}                     {if(show_tokens)printf("WHILE\n");pos+=yyleng;return WHILE;}
+{LSHIFT}                    {if(show_tokens)printf("LSHIFT\n");pos+=yyleng;if(return_stf)return LSHIFT;}
+{RSHIFT}                    {if(show_tokens)printf("RSHIFT\n");pos+=yyleng;if(return_stf)return RSHIFT;}
+{XOR}                       {if(show_tokens)printf("XOR\n");pos+=yyleng;if(return_stf)return XOR;}
+{BOOL}                      {if(show_tokens)printf("BOOL\n");pos+=yyleng;if(return_stf)return BOOL;}
+{CLASS}                     {if(show_tokens)printf("CLASS\n");pos+=yyleng;if(return_stf)return CLASS;}
+{DOTLENGTH}                 {if(show_tokens)printf("DOTLENGTH\n");pos+=yyleng;if(return_stf)return DOTLENGTH;}
+{DOUBLE}                    {if(show_tokens)printf("DOUBLE\n");pos+=yyleng;if(return_stf)return DOUBLE;}
+{ELSE}                      {if(show_tokens)printf("ELSE\n");pos+=yyleng;if(return_stf)return ELSE;}
+{IF}                        {if(show_tokens)printf("IF\n");pos+=yyleng;if(return_stf)return IF;}
+{INT}                       {if(show_tokens)printf("INT\n");pos+=yyleng;if(return_stf)return INT;}
+{PRINT}                     {if(show_tokens)printf("PRINT\n");pos+=yyleng;if(return_stf)return PRINT;}
+{PARSEINT}                  {if(show_tokens)printf("PARSEINT\n");pos+=yyleng;if(return_stf)return PARSEINT;}
+{PUBLIC}                    {if(show_tokens)printf("PUBLIC\n");pos+=yyleng;if(return_stf)return PUBLIC;}
+{RETURN}                    {if(show_tokens)printf("RETURN\n");pos+=yyleng;if(return_stf)return RETURN;}
+{STATIC}                    {if(show_tokens)printf("STATIC\n");pos+=yyleng;if(return_stf)return STATIC;}
+{STRING}                    {if(show_tokens)printf("STRING\n");pos+=yyleng;if(return_stf)return STRING;}
+{VOID}                      {if(show_tokens)printf("VOID\n");pos+=yyleng;if(return_stf)return VOID;}
+{WHILE}                     {if(show_tokens)printf("WHILE\n");pos+=yyleng;if(return_stf)return WHILE;}
 
-{INTLIT}                    {if(show_tokens)printf("INTLIT(%s)\n",yytext);pos+=yyleng;return INTLIT;}
-{REALLIT}                   {if(show_tokens)printf("REALLIT(%s)\n",yytext);pos+=yyleng;return REALLIT;}
-{BOOLLIT}                   {if(show_tokens)printf("BOOLLIT(%s)\n", yytext);pos+=yyleng;return BOOLLIT;}
+{INTLIT}                    {if(show_tokens)printf("INTLIT(%s)\n",yytext);pos+=yyleng;yylval.string = strdup(yytext);if(return_stf)return INTLIT;}
+{REALLIT}                   {if(show_tokens)printf("REALLIT(%s)\n",yytext);pos+=yyleng;yylval.string = strdup(yytext);if(return_stf)return REALLIT;}
+{BOOLLIT}                   {if(show_tokens)printf("BOOLLIT(%s)\n", yytext);pos+=yyleng;yylval.string = strdup(yytext);if(return_stf)return BOOLLIT;}
 {RESERVED}                  {if(show_tokens)printf("RESERVED(%s)\n", yytext);pos+=yyleng;}
-{ID}                        {if(show_tokens)printf("ID(%s)\n",yytext);pos+=yyleng;yylval.string = strdup(yytext);return ID;}
+{ID}                        {if(show_tokens)printf("ID(%s)\n",yytext);pos+=yyleng;yylval.string = strdup(yytext);if(return_stf)return ID;}
 
 ["\t\f "]                   {pos+=1;} 
 {PARAGRAPH_ESCAPE}          {line++;pos=1;}
@@ -147,28 +148,31 @@ int main(int argc, char *argv[]){
     
     if (argc == 2){
         if (strcmp(argv[1],"-l") == 0){
-            show_errors = true;
             show_tokens = true;
+            return_stf = false;
             yylex();
             // printf("tokens e mensagens de erro");
             }
         if (strcmp(argv[1], "-e1")==0){
-            show_errors = true;
+            return_stf = false;
             yylex();
             // printf("mensagens de erro");
         }
         if (strcmp(argv[1], "-t")==0){
+            return_stf = true;
             yyparse();
+            if (!syntax_error_found)
+                print_tree(root, 0);
             // printf("mensagens de erro");
         }
         if (strcmp(argv[1], "-e2")==0){
+            return_stf = true;
             yyparse();
             // printf("mensagens de erro");
         }
     }else if (argc ==1){
-        show_errors = true;
         show_tokens = false;
-        yylex();
+        return_stf = true;
         yyparse();
         // printf("mensagens de erro");
     }
@@ -176,10 +180,12 @@ int main(int argc, char *argv[]){
         printf("erro");
         return 0;
     }
-    print_tree(root, 0);
+
     if(root != NULL){
         cleanTree(root);
     }
+
+
     if (in_state == 1)
         printf("Line %d, col %d: unterminated comment\n", temp_line, pos_extra);
     else if (in_state == 2)
@@ -194,5 +200,6 @@ return 1;
 }
 
 void yyerror(char *s){
-    printf("Line %d col %d: %s: %s\n", line, (int)( pos - strlen(yytext)), s, yytext);
+    // syntax_error_found = true;
+    printf("Line %d, col %d: %s: %s\n", line, (int)( pos - strlen(yytext)), s, yytext);
 }
