@@ -81,7 +81,7 @@
 %left LSQ RSQ LPAR RPAR
 
 
-%nonassoc ELSE
+%nonassoc ELSE IF2
 
 %%
 Program: CLASS ID LBRACE Aux1 RBRACE    {root = new_node("Program", NULL, new_brother(new_node("Id", $2, NULL), $4));}
@@ -175,7 +175,7 @@ VarDecl: Type ID Aux2 SEMICOLON     {
                                     }
 
 Statement: LBRACE Statement2 RBRACE                  {$$ = new_node("Block", NULL, $2);}
-    | IF LPAR Expr RPAR Statement %prec ELSE                  {
+    | IF LPAR Expr RPAR Statement      %prec IF2               {
                                                         Node *node_aux = $3;
                                                         if($3 == NULL)node_aux = $5;
                                                         else node_aux = new_brother($3, $5);
