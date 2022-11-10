@@ -1,5 +1,5 @@
 Line 2, col 39: unterminated string literal
-Line 5, col 3: syntax error: b
+Line 4, col 4: syntax error: ++
 Line 5, col 4: illegal character (~)
 Line 7, col 8: syntax error: =
 Line 7, col 19: illegal character (?)

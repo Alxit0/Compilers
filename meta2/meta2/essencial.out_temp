@@ -4,4 +4,5 @@ Program
 ....MethodHeader
 ......Void
 ......Id(main)
+......MethodParams
 ....MethodBody

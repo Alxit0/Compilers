@@ -3,11 +3,17 @@ Program
 ..FieldDecl
 ....Double
 ....Id(comp)
+..FieldDecl
+....Double
 ....Id(hello)
 ..FieldDecl
 ....Bool
 ....Id(b)
+..FieldDecl
+....Bool
 ....Id(a)
+..FieldDecl
+....Bool
 ....Id(c)
 ..MethodDecl
 ....MethodHeader
