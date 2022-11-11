@@ -4,5 +4,5 @@
 flex jucompiler.l
 yacc -ydtv jucompiler.y
 xcrun clang -o jucompiler y.tab.c lex.yy.c
-
+./test.sh ./jucompiler
 # 'lex' and 'gcc' are commonly available too
