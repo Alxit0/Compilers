@@ -34,13 +34,14 @@ class newClass{
 	}
 	public static void test() {
 		a(2,3);
-		"This is an unterminated string	
+		// "This is an unterminated string	"
 		int finalI;
 		finalI = 2 + 3;
 	}
 
 	public static int sum(int k,int j) {
+        boolean pI = false;
 		return k + j;
 	}
 }
-/*The file ends with an unterminated comment
+/*The file ends with an unterminated comment*/
