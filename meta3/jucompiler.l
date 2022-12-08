@@ -10,6 +10,8 @@
     #include <stdarg.h>
     #include <stdbool.h>
 
+    #include "semantics.h"
+
     extern struct Node *root;
     char guarda[256];
     
@@ -183,7 +185,7 @@ int main(int argc, char *argv[]) {
             yyparse();
             if (!syntax_error_found) {
                 print_tree(root, 0);
-            }
+            }            
         }else if (strcmp(argv[1], "-e2") == 0) {
             yyparse();
             yylex();
@@ -193,5 +195,7 @@ int main(int argc, char *argv[]) {
         yyparse();
         yylex();
     }
+    analiza_programa(root);
+
     cleanTree(root);
 }
