@@ -111,6 +111,8 @@ char * translate_param(char * param){
         return "int";
     if (strcmp(param, "StringArray")==0)
         return "String[]";
+    if (strcmp(param, "Void")==0)
+        return "void";
     
     return param;
 }

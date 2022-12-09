@@ -45,7 +45,7 @@ void analiza_method_decl(Node* root, Table* class_table){
     method_table->method = "Method";
     method_table->parent = class_table;
 
-    add_element(method_table, "return", "void", "");
+    add_element(method_table, "return", methodHeader->son->type, "");
 
     Node* aux = methodHeader->son->brother->brother->son; //ParamDecl
     while (aux != NULL)
