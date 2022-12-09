@@ -256,3 +256,107 @@ Program
 ....MethodBody
 ..MethodDecl
 ....MethodHeader
+......Int
+......Id(f)
+......MethodParams
+........ParamDecl
+..........Double
+..........Id(a)
+........ParamDecl
+..........Int
+..........Id(b)
+........ParamDecl
+..........Double
+..........Id(c)
+........ParamDecl
+..........Int
+..........Id(d)
+....MethodBody
+..MethodDecl
+....MethodHeader
+......Double
+......Id(f)
+......MethodParams
+........ParamDecl
+..........Int
+..........Id(a)
+........ParamDecl
+..........Double
+..........Id(b)
+........ParamDecl
+..........Int
+..........Id(c)
+........ParamDecl
+..........Double
+..........Id(d)
+....MethodBody
+==== Method main(String[]) Symbol Table =====
+return		void
+args		String[]	 param
+i		int
+d		double
+b		boolean
+
+==== Method f() Symbol Table =====
+return		void
+
+==== Method f(boolean) Symbol Table =====
+return		int
+a		boolean	 param
+
+==== Method f(double) Symbol Table =====
+return		boolean
+a		double	 param
+
+==== Method f(int) Symbol Table =====
+return		double
+a		int	 param
+
+==== Method f(String[]) Symbol Table =====
+return		void
+a		String[]	 param
+
+==== Method f(int,double) Symbol Table =====
+return		boolean
+a		int	 param
+b		double	 param
+
+==== Method f(int,double,boolean) Symbol Table =====
+return		boolean
+a		int	 param
+b		double	 param
+c		boolean	 param
+
+==== Method f(int,double,boolean,int) Symbol Table =====
+return		boolean
+a		int	 param
+b		double	 param
+c		boolean	 param
+d		int	 param
+
+==== Method f(double,int,double,int) Symbol Table =====
+return		int
+a		double	 param
+b		int	 param
+c		double	 param
+d		int	 param
+
+==== Method f(int,double,int,double) Symbol Table =====
+return		double
+a		int	 param
+b		double	 param
+c		int	 param
+d		double	 param
+
+==== Class Call_Me_Maybe Symbol Table =====
+main	(String[])	void
+f	()	void
+f	(boolean)	int
+f	(double)	boolean
+f	(int)	double
+f	(String[])	void
+f	(int,double)	boolean
+f	(int,double,boolean)	boolean
+f	(int,double,boolean,int)	boolean
+f	(double,int,double,int)	int
+f	(int,double,int,double)	double

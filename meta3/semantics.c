@@ -31,7 +31,7 @@ void analiza_field_decl(Node* root, Table* class_table){
     if (root == NULL)
         return;
 
-    
+    add_element(class_table, root->son->brother->value, root->son->type, "");
 }
 
 void analiza_method_decl(Node* root, Table* class_table){
@@ -54,6 +54,12 @@ void analiza_method_decl(Node* root, Table* class_table){
         add_element(method_table, aux->son->brother->value, aux->son->type, "param");
         aux = aux->brother;
     }
+
+    Table_Node * aux2 = add_element(class_table, method_table->name, methodHeader->son->type, "");
+    free(aux2->param);
+    aux2->param = method_table->params_head;
+    if (aux2->param != NULL)
+        aux2->param->is_method_args = 1;
 
     // method body stuf
     handle_method_body(method_table, methodBody);

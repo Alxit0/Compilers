@@ -44,19 +44,19 @@ void add_param(Table* target, char* value){
 
 }
 
-void add_element(Table* target, char* id, char* type, char* param){
+Table_Node * add_element(Table* target, char* id, char* type, char* param){
     if (target == NULL)
-        return;
+        return NULL;
     
     Table_Node* temp = (Table_Node*) malloc(sizeof(Table_Node));
     
     temp->id = id;
     temp->type = translate_param(type);
-    temp->param = param;
+    temp->param = init_param(param);
 
     if (target->elems == NULL){
         target->elems = temp;
-        return;
+        return temp;
     }
     
     Table_Node* aux = target->elems;
@@ -65,7 +65,8 @@ void add_element(Table* target, char* id, char* type, char* param){
         aux = aux->next;
     }
     aux->next = temp;
-    
+
+    return temp;    
 }
 
 
@@ -75,6 +76,26 @@ void print_class_table(Table* target){
         return;
     
     printf("==== %s %s Symbol Table =====\n", target->method, target->name);
+
+    Table_Node * aux = target->elems;
+
+    while (aux)
+    {
+        // printf("%s\t%s\t%s\n", aux->id, aux->type);
+
+        printf("%s\t", aux->id);
+
+        if (aux->param == NULL || aux->param->is_method_args == 1){
+            printf("(");
+            print_params(aux->param);
+            printf(")\t%s", aux->type);
+        }
+        else
+            printf("%s", aux->type);
+        aux = aux->next;
+        printf("\n");
+    }
+    
 }
 
 void print_method_table(Table* target){
@@ -90,7 +111,7 @@ void print_method_table(Table* target){
     {
         printf("%s\t\t%s", aux->id, aux->type);
 
-        if (strcmp(aux->param, "") != 0)
+        if (strcmp(aux->param->param, "") != 0)
         {
             printf("\t param");
         }
@@ -102,6 +123,13 @@ void print_method_table(Table* target){
 
 
 // private funcs
+Params_node* init_param(char * param){
+    Params_node* temp = (Params_node*) malloc(sizeof(Params_node));
+    temp->param = param;
+    temp->is_method_args = 0;
+    return temp;
+}
+
 char * translate_param(char * param){
     if (strcmp(param, "Bool")==0)
         return "boolean";
