@@ -8,23 +8,30 @@ void analiza_programa(Node* root){
     if (root == NULL)
         return;
     
+    Table_List* table_list = init_table_list();
+    
     Table* class_table = init_table(root);
     
     class_table->method = "Class";
     class_table->name = root->son->value;
     
+    add_table(table_list, class_table, "class");
+
     Node* aux = root->son;
     while (aux != NULL)
     {
         if (strcmp(aux->type, "FieldDecl") == 0)
             analiza_field_decl(aux, class_table);
         
-        if (strcmp(aux->type, "MethodDecl") == 0)
-            analiza_method_decl(aux, class_table);
+        if (strcmp(aux->type, "MethodDecl") == 0){
+            Table* aux2 = analiza_method_decl(aux, class_table);
+            add_table(table_list, aux2, "method");
+        }
         aux = aux->brother;
     }
 
-    print_class_table(class_table);
+    print_table_list(table_list);
+    // print_class_table(class_table);
 }
 
 void analiza_field_decl(Node* root, Table* class_table){
@@ -34,7 +41,7 @@ void analiza_field_decl(Node* root, Table* class_table){
     add_element(class_table, root->son->brother->value, root->son->type, "");
 }
 
-void analiza_method_decl(Node* root, Table* class_table){
+Table* analiza_method_decl(Node* root, Table* class_table){
     Table* method_table = init_table(root);
     
     Node* methodHeader = root->son;
@@ -64,9 +71,8 @@ void analiza_method_decl(Node* root, Table* class_table){
     // method body stuf
     handle_method_body(method_table, methodBody);
     
-
-    
-    print_method_table(method_table);
+    // print_method_table(method_table);
+    return method_table;
 }
 
 void handle_method_body(Table* target, Node* root){

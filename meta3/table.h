@@ -1,3 +1,6 @@
+#ifndef TABLE_H_INCLUDED
+#define TABLE_H_INCLUDED
+
 #include "arvore.h"
 
 typedef struct params_node
@@ -15,7 +18,6 @@ typedef struct table_node
     struct table_node * next;
 }Table_Node;
 
-
 typedef struct table
 {
     char * method;
@@ -32,3 +34,5 @@ void add_param(Table* target, char* value);
 Table_Node * add_element(Table* target, char* id, char* type, char* param);
 void print_class_table(Table* target);
 void print_method_table(Table* target);
+
+#endif
