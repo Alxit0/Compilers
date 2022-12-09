@@ -22,6 +22,13 @@ Table* init_table(Node* root){
     return temp;
 }
 
+Params_node* init_param(char * param){
+    Params_node* temp = (Params_node*) malloc(sizeof(Params_node));
+    temp->param = param;
+    temp->is_method_args = 0;
+    return temp;
+}
+
 void add_param(Table* target, char* value){
     if (target == NULL)
         return;
@@ -123,13 +130,6 @@ void print_method_table(Table* target){
 
 
 // private funcs
-Params_node* init_param(char * param){
-    Params_node* temp = (Params_node*) malloc(sizeof(Params_node));
-    temp->param = param;
-    temp->is_method_args = 0;
-    return temp;
-}
-
 char * translate_param(char * param){
     if (strcmp(param, "Bool")==0)
         return "boolean";
