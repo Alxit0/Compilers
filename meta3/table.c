@@ -44,6 +44,31 @@ void add_param(Table* target, char* value){
 
 }
 
+void add_element(Table* target, char* id, char* type, char* param){
+    if (target == NULL)
+        return;
+    
+    Table_Node* temp = (Table_Node*) malloc(sizeof(Table_Node));
+    
+    temp->id = id;
+    temp->type = translate_param(type);
+    temp->param = param;
+
+    if (target->elems == NULL){
+        target->elems = temp;
+        return;
+    }
+    
+    Table_Node* aux = target->elems;
+    while (aux->next != NULL)
+    {
+        aux = aux->next;
+    }
+    aux->next = temp;
+    
+}
+
+
 
 void print_class_table(Table* target){
     if (target == NULL)
@@ -57,10 +82,22 @@ void print_method_table(Table* target){
         return;
 
     printf("==== %s %s(", target->method, target->name);
-
     print_params(target->params_head);
+    printf(") Symbol Table =====\n");
 
-    printf(") Symbol Table =====\n\n");
+    Table_Node* aux = target->elems;
+    while (aux != NULL)
+    {
+        printf("%s\t\t%s", aux->id, aux->type);
+
+        if (strcmp(aux->param, "") != 0)
+        {
+            printf("\t param");
+        }
+        printf("\n");
+        aux = aux->next;
+    }
+    printf("\n");
 }
 
 

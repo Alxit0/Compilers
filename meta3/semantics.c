@@ -40,20 +40,44 @@ void analiza_method_decl(Node* root, Table* class_table){
     Node* methodHeader = root->son;
     Node* methodBody = root->son->brother;
 
+    // method header stuf
     method_table->name = methodHeader->son->brother->value;
     method_table->method = "Method";
     method_table->parent = class_table;
 
-    int i = 0;
+    add_element(method_table, "return", "void", "");
+
     Node* aux = methodHeader->son->brother->brother->son; //ParamDecl
     while (aux != NULL)
     {
         add_param(method_table, aux->son->type);
-        if (i++ == 10)
-            break;
+        add_element(method_table, aux->son->brother->value, aux->son->type, "param");
+        aux = aux->brother;
+    }
+
+    // method body stuf
+    handle_method_body(method_table, methodBody);
+    
+
+    
+    print_method_table(method_table);
+}
+
+void handle_method_body(Table* target, Node* root){
+    if (root == NULL){
+        return;
+    }
+
+    if (strcmp(root->type, "VarDecl")==0){
+        add_element(target, root->son->brother->value, root->son->type, "");
+        return;
+    }
+    
+    Node * aux = root->son;
+    while (aux != NULL)
+    {
+        handle_method_body(target, aux);
         aux = aux->brother;
     }
     
-    
-    print_method_table(method_table);
 }
