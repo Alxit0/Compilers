@@ -82,7 +82,7 @@ void print_class_table(Table* target){
     if (target == NULL)
         return;
     
-    printf("==== %s %s Symbol Table =====\n", target->method, target->name);
+    printf("===== %s %s Symbol Table =====\n", target->method, target->name);
 
     Table_Node * aux = target->elems;
 
@@ -109,7 +109,7 @@ void print_method_table(Table* target){
     if (target == NULL)
         return;
 
-    printf("==== %s %s(", target->method, target->name);
+    printf("===== %s %s(", target->method, target->name);
     print_params(target->params_head);
     printf(") Symbol Table =====\n");
 
@@ -120,12 +120,11 @@ void print_method_table(Table* target){
 
         if (strcmp(aux->param->param, "") != 0)
         {
-            printf("\t param");
+            printf("\tparam");
         }
         printf("\n");
         aux = aux->next;
     }
-    printf("\n");
 }
 
 

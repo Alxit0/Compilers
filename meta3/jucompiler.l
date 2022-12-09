@@ -187,15 +187,21 @@ int main(int argc, char *argv[]) {
                 print_tree(root, 0);
             }            
         }else if (strcmp(argv[1], "-e2") == 0) {
+            return_stf = true;
             yyparse();
             yylex();
+        }else if (strcmp(argv[1], "-s") == 0) {
+            return_stf = true;
+            yyparse();
+            if (!syntax_error_found)
+                analiza_programa(root);
         }
     }
     else {
+        return_stf = true;
         yyparse();
         yylex();
     }
-    analiza_programa(root);
 
     cleanTree(root);
 }

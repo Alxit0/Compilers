@@ -2,3 +2,4 @@
 y.tab.*
 lex.yy.c
 y.output
+*.out_temp

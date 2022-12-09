@@ -42,7 +42,7 @@ void print_table_list(Table_List* table_list){
             print_class_table(aux->table);
         else
             print_method_table(aux->table);
-        
+        printf("\n");
         aux = aux->next;
     }
     
