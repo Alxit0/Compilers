@@ -31,8 +31,9 @@ typedef struct table
 Table* init_table(Node* root);
 Params_node* init_param(char * param);
 void add_param(Table* target, char* value);
-Table_Node * add_element(Table* target, char* id, char* type, char* param);
+Table_Node * add_element(Table* target, TokenContainer* id, char* type, char* param, int check);
 void print_class_table(Table* target);
 void print_method_table(Table* target);
 void print_params(Params_node* head);
+Params_node* procura_tabela_char(char * nome, Table* table);
 #endif

@@ -66,9 +66,10 @@
 %union {
     struct Node *tree;
     char * string;
+    struct token_container* tk;
 }
 
-%token <string> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED
+%token <tk> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED
 
 %type <tree> Program Aux1 Aux2 MethodDecl FieldDecl Type MethodHeader Aux3 FormalParams Aux4 MethodBody Aux5 VarDecl Aux6 Statement Aux7 StatementPrint MethodInvocation MethodInvocation2 MethodInvocationExpr Assignment ParseArgs Expr Expr2
 

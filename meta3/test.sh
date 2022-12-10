@@ -78,12 +78,12 @@ if [[ -d meta3 ]]; then
         if $exe $flag < "$inp" > "$tmp"; then
             lines=$(diff $out $tmp | wc -l)
             if [[ $lines -gt 0 ]]; then
-                echo " Wrong Answer, run 'diff $out $tmp' to see the differences"
+                echo "diff $out $tmp"
             else
                 accepted=$(( $accepted + 1 ))
             fi
-        else
-            echo " Runtime Error, failed to execute '$exe'"
+        # else
+        #     echo " Runtime Error, failed to execute '$exe'"
         fi
     done
 fi

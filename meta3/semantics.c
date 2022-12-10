@@ -4,31 +4,6 @@
 
 #include "semantics.h"
 
-void handle_call(Node * node, Table* table);
-
-
-Params_node* procura_tabela_char(char * nome, Table* table) {
-    if (table == NULL)
-        return init_param("undef");
-    
-    Table_Node* aux = table->elems;
-    
-    while (aux)
-    {
-        // printf("Ola %s\n", aux->id);
-        if (aux->param == NULL){
-            aux = aux->next;
-            continue;
-        }
-
-        if (strcmp(aux->id, nome) == 0){
-            // printf("\t%s\n", aux->type);
-            return init_param(aux->type);
-        }
-        aux = aux->next;
-    }
-    return procura_tabela_char(nome, table->parent);
-}
 
 int compare_parms(Params_node* pr1, Params_node* pr2){
     
@@ -53,7 +28,44 @@ int compare_parms(Params_node* pr1, Params_node* pr2){
     return 0;
 }
 
-int compare_parms_diferent(Params_node* param1, Params_node* param2){
+int compare_parms_diferent(Params_node* pr1, Params_node* pr2){
+    Params_node* param1 = pr1;  //to check
+    Params_node* param2 = pr2;  //preciso
+
+    while (param1 != NULL && param2 != NULL)
+    {
+        // printf("\t Ola\n");
+        if (param1->param == NULL || param2->param == NULL)
+            return 0;
+
+        if (strcmp(param1->param, param2->param) == 0){
+            param1 = param1->next;
+            param2 = param2->next;
+            continue;
+        }
+
+        if (strcmp(param1->param, "double") == 0){
+            if (strcmp(param2->param, "int") != 0)
+                return 0;
+        }else
+        {
+            return 0;
+        }
+        
+        
+
+        // if (strcmp(param1->param, "int") == 0){
+        //     if (strcmp(param2->param, "double") != 0)
+        //         return 0;
+        // }
+        
+        param1 = param1->next;
+        param2 = param2->next;
+    }
+    if (param1 == NULL && param2 == NULL){
+        return 1;
+    }
+    
     return 0;
 }
 
@@ -67,7 +79,7 @@ Params_node* get_call_needed_params(Node* node, Table* table){
     while (aux)
     {
         if (strcmp(aux->type, "Id") == 0){
-            temp = procura_tabela_char(aux->value, table);
+            temp = procura_tabela_char(aux->value->string, table);
         }else{
             temp = aux->anotation;
         }
@@ -98,13 +110,8 @@ Table_Node* find_method(Table* table, char* id, Params_node* needed_params){
 
         if (needed_params == NULL && aux->param == NULL)
             return aux;
-        
-        if (aux->param == NULL){
-            aux = aux->next;
-            continue;
-        }
 
-        if (aux->param->is_method_args != 1){
+        if (aux->param == NULL || aux->param->is_method_args != 1){
             aux = aux->next;
             continue;
         }
@@ -116,36 +123,28 @@ Table_Node* find_method(Table* table, char* id, Params_node* needed_params){
     }
 
     aux = table->elems;
+
     while (aux != NULL)
     {
+        if (strcmp(aux->id, id) != 0){
+            aux = aux->next;
+            continue;
+        }
+
+        if (needed_params == NULL && aux->param == NULL)
+            return aux;
+
         if (aux->param == NULL || aux->param->is_method_args != 1){
             aux = aux->next;
             continue;
         }
-
-        if (strcmp(aux->id, id) != 0 || aux->param->is_method_args != 1){
-            aux = aux->next;
-            continue;
-        }
-
+        
         if (compare_parms_diferent(aux->param, needed_params) == 1)
             return aux;
         aux = aux->next;
     }
 
     return find_method(table->parent, id, needed_params);
-}
-
-void handle_call(Node * node, Table* table){
-    // printf(" %s\n", node->son->value);
-    Params_node* needed_params = get_call_needed_params(node, table);
-    Table_Node* called_method = find_method(table, node->son->value, needed_params);
-    
-    if (called_method == NULL){
-        node->anotation = init_param("undef");
-    }else{
-        node->anotation = called_method->param;
-    }
 }
 
 
@@ -159,7 +158,7 @@ void analiza_programa(Node* root){
     Table* class_table = init_table(root);
     
     class_table->method = "Class";
-    class_table->name = root->son->value;
+    class_table->name = root->son->value->string;
     
     add_table(table_list, class_table, "class");
 
@@ -187,7 +186,7 @@ void analiza_field_decl(Node* root, Table* class_table){
     if (root == NULL)
         return;
 
-    add_element(class_table, root->son->brother->value, root->son->type, "");
+    add_element(class_table, root->son->brother->value, root->son->type, "", 1);
 }
 
 Table* analiza_method_decl(Node* root, Table* class_table){
@@ -197,21 +196,21 @@ Table* analiza_method_decl(Node* root, Table* class_table){
     Node* methodBody = root->son->brother;
 
     // method header stuf
-    method_table->name = methodHeader->son->brother->value;
+    method_table->name = methodHeader->son->brother->value->string;
     method_table->method = "Method";
     method_table->parent = class_table;
 
-    add_element(method_table, "return", methodHeader->son->type, "");
+    add_element(method_table, create_tk_cont("return", -1, -1), methodHeader->son->type, "", 0);
 
     Node* aux = methodHeader->son->brother->brother->son; //ParamDecl
     while (aux != NULL)
     {
         add_param(method_table, aux->son->type);
-        add_element(method_table, aux->son->brother->value, aux->son->type, "param");
+        add_element(method_table, aux->son->brother->value, aux->son->type, "param", 1);
         aux = aux->brother;
     }
 
-    Table_Node * aux2 = add_element(class_table, method_table->name, methodHeader->son->type, "");
+    Table_Node * aux2 = add_element(class_table, create_tk_cont(method_table->name, -1, -1), methodHeader->son->type, "", 0);
     free(aux2->param);
     aux2->param = method_table->params_head;
     if (aux2->param != NULL)
@@ -229,12 +228,11 @@ void handle_method_body(Table* target, Node* root){
         return;
     }
     if (strcmp(root->type, "VarDecl")==0){
-        add_element(target, root->son->brother->value, root->son->type, "");
+        add_element(target, root->son->brother->value, root->son->type, "", 1);
         return;
     }
     if (strcmp(root->type, "Id") == 0) {
-        root->anotation = procura_tabela_char(root->value, target);
-        // printf("%s %s\n", root->value, root->anotation->param);
+        root->anotation = procura_tabela_char(root->value->string, target);
         // return;
     }
 
@@ -286,19 +284,21 @@ void handle_method_body(Table* target, Node* root){
         
         Params_node* anota;
         if (strcmp(root->son->anotation->param, root->son->brother->anotation->param) == 0) {
+            // printf("%s\n", root->son->anotation->param);
             anota = root->son->anotation;
         }
         else {
             anota = init_param("double");
         }
-        root->anotation = anota;
+        root->anotation = root->son->anotation;
     }
     if (strcmp(root->type, "Call") == 0){
         Params_node* needed_params = get_call_needed_params(root, target);
-        Table_Node* called_method = find_method(target, root->son->value, needed_params);
+        Table_Node* called_method = find_method(target, root->son->value->string, needed_params);
 
         if (called_method == NULL){
             // printf("No method found!\n");
+            root->son->anotation = init_param("undef");
         }else{
             root->anotation = init_param(called_method->type);
             root->son->anotation = called_method->param;

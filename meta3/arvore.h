@@ -3,10 +3,17 @@
 
 struct params_node;
 
+typedef struct token_container
+{
+    char * string;
+    int pos;
+    int line;
+}TokenContainer;
+
 
 typedef struct Node{
         char* type;
-        char* value;
+        TokenContainer* value;
         struct Node *son;
         struct Node *brother;
         struct params_node* anotation;
@@ -14,10 +21,11 @@ typedef struct Node{
 } Node;
 
 #include "table.h"
-Node *create_node(char *type, char *value, Node *son);
+Node *create_node(char *type, TokenContainer* value, Node *son);
 Node *add_brother(Node *brother, Node *brother_to_add);
 void print_tree(Node * node, int lvl);
 void print_anoted_tree(Node * node, int lvl);
 void cleanTree(Node * node);
+TokenContainer* create_tk_cont(char* string, int pos, int line);
 
 #endif

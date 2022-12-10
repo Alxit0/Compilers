@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Node *create_node(char *type, char *value, Node *son){
+Node *create_node(char *type, TokenContainer* value, Node *son){
         Node *new_node = (Node *) malloc(sizeof(Node));
         new_node->type = type;
         new_node->value = value;
@@ -11,6 +11,7 @@ Node *create_node(char *type, char *value, Node *son){
         new_node->brother = NULL;
         new_node->anotation = NULL;
         new_node->is_method_anoted = 0;
+
         return new_node;
     }
 
@@ -40,9 +41,9 @@ void print_tree(Node * node, int lvl){
         printf("%s\n", node->type);
     else{
         if(strcmp(node->type, "StrLit") == 0)
-            printf("%s(\"%s\")\n", node -> type, node->value);
+            printf("%s(\"%s\")\n", node -> type, node->value->string);
         else
-            printf("%s(%s)\n", node -> type, node->value);
+            printf("%s(%s)\n", node -> type, node->value->string);
     }
     
     print_tree(node->son, lvl+1);
@@ -61,9 +62,9 @@ void print_anoted_tree(Node * node, int lvl){
         printf("%s", node->type);
     else{
         if(strcmp(node->type, "StrLit") == 0)
-            printf("%s(\"%s\")", node -> type, node->value);
+            printf("%s(\"%s\")", node -> type, node->value->string);
         else
-            printf("%s(%s)", node -> type, node->value);
+            printf("%s(%s)", node -> type, node->value->string);
     }
     if (node->is_method_anoted == 1){
         printf(" - ");
@@ -83,4 +84,12 @@ void cleanTree(Node * node){
     cleanTree(node->brother);
     cleanTree(node->son);
     free(node);
+}
+
+TokenContainer* create_tk_cont(char* string, int pos, int line){
+    TokenContainer* resp = (TokenContainer*) malloc(sizeof(TokenContainer));
+    resp->string = string;
+    resp->line = line;
+    resp->pos = pos;
+    return resp;
 }

@@ -98,7 +98,7 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 <COMMENT_BLOCK>.                        {pos++;}
 
 "\""                                            {BEGIN STRING_STATE;in_state=1;pos_extra = pos; pos++;error_found=false;in_state=2;string_pos=0;}
-<STRING_STATE>\"                                      {BEGIN 0; in_state=0;pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);if(return_stf && !error_found){yylval.string=strdup(string_buff);return STRLIT;}}
+<STRING_STATE>\"                                      {BEGIN 0; in_state=0;pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);if(return_stf && !error_found){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return STRLIT;}}
 <STRING_STATE>"\\"({PARAGRAPH_ESCAPE})                {BEGIN 0; printf("Line %d, col %d: invalid escape sequence (\\)\n", line, pos); printf("Line %d, col %d: unterminated string literal\n", line, pos_extra); line++; pos = 1;}
 <STRING_STATE>"\\"[^"fnrt\\\""]                       {error_found=true; printf("Line %d, col %d: invalid escape sequence (%s)\n", line, pos, yytext);pos+=2;}
 <STRING_STATE>"\\"["fnrt\\\""]                        {pos+=2;string_buff[string_pos++]=yytext[0];string_buff[string_pos++]=yytext[1];}
@@ -149,11 +149,11 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 {VOID}                      {if(show_tokens)printf("VOID\n");pos+=yyleng;if(return_stf)return VOID;}
 {WHILE}                     {if(show_tokens)printf("WHILE\n");pos+=yyleng;if(return_stf)return WHILE;}
 
-{INTLIT}                    {if(show_tokens)printf("INTLIT(%s)\n",yytext);pos+=yyleng;if(return_stf){yylval.string = strdup(yytext);return INTLIT;}}
-{REALLIT}                   {if(show_tokens)printf("REALLIT(%s)\n",yytext);pos+=yyleng;if(return_stf){yylval.string = strdup(yytext);return REALLIT;}}
-{BOOLLIT}                   {if(show_tokens)printf("BOOLLIT(%s)\n", yytext);pos+=yyleng;if(return_stf){yylval.string = strdup(yytext);return BOOLLIT;}}
-{RESERVED}                  {if(show_tokens)printf("RESERVED(%s)\n", yytext);pos+=yyleng;if(return_stf){yylval.string = strdup(yytext);return RESERVED;}}
-{ID}                        {if(show_tokens)printf("ID(%s)\n",yytext);pos+=yyleng;if(return_stf){yylval.string = strdup(yytext);return ID;}}
+{INTLIT}                    {if(show_tokens)printf("INTLIT(%s)\n",yytext);pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return INTLIT;}}
+{REALLIT}                   {if(show_tokens)printf("REALLIT(%s)\n",yytext);pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return REALLIT;}}
+{BOOLLIT}                   {if(show_tokens)printf("BOOLLIT(%s)\n", yytext);pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return BOOLLIT;}}
+{RESERVED}                  {if(show_tokens)printf("RESERVED(%s)\n", yytext);pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return RESERVED;}}
+{ID}                        {if(show_tokens)printf("ID(%s)\n",yytext);pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return ID;}}
 
 ["\t\f "]                   {pos+=1;} 
 {PARAGRAPH_ESCAPE}          {line++;pos=1;}
