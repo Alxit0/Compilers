@@ -34,5 +34,5 @@ void add_param(Table* target, char* value);
 Table_Node * add_element(Table* target, char* id, char* type, char* param);
 void print_class_table(Table* target);
 void print_method_table(Table* target);
-
+void print_params(Params_node* head);
 #endif

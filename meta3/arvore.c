@@ -9,6 +9,7 @@ Node *create_node(char *type, char *value, Node *son){
         new_node->value = value;
         new_node->son = son;
         new_node->brother = NULL;
+        new_node->anotation = NULL;
         return new_node;
     }
 
@@ -45,6 +46,31 @@ void print_tree(Node * node, int lvl){
     
     print_tree(node->son, lvl+1);
     print_tree(node->brother, lvl);
+}
+
+void print_anoted_tree(Node * node, int lvl){
+    if (node == NULL)
+        return;
+    
+    for (int i = 0; i < lvl; ++i){
+        printf("..");
+    }
+
+    if (node->value == NULL)
+        printf("%s", node->type);
+    else{
+        if(strcmp(node->type, "StrLit") == 0)
+            printf("%s(\"%s\")", node -> type, node->value);
+        else
+            printf("%s(%s)", node -> type, node->value);
+    }
+
+    if (node->anotation != NULL)
+        printf(" - %s", node->anotation->param);
+    printf("\n");
+    
+    print_anoted_tree(node->son, lvl+1);
+    print_anoted_tree(node->brother, lvl);
 }
 
 void cleanTree(Node * node){
