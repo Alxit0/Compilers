@@ -22,7 +22,7 @@ Params_node* procura_tabela_char(char * nome, Table* table) {
         }
 
         if (strcmp(aux->id, nome) == 0){
-            printf("\t%s\n", aux->type);
+            // printf("\t%s\n", aux->type);
             return init_param(aux->type);
         }
         aux = aux->next;
@@ -62,17 +62,13 @@ Params_node* get_call_needed_params(Node* node, Table* table){
     Params_node* head = NULL;
     Params_node* tail = NULL;
     Params_node * temp;
-    
-    printf("%s\n", node->son->value);
+
+
     while (aux)
     {
-        printf("\t%s\n", aux->type);
         if (strcmp(aux->type, "Id") == 0){
             temp = procura_tabela_char(aux->value, table);
-            aux->anotation = temp;
-        }
-        if (strcmp(aux->type, "Call") == 0){
-            handle_call(aux, table);
+        }else{
             temp = aux->anotation;
         }
         if (head == NULL){
@@ -95,15 +91,24 @@ Table_Node* find_method(Table* table, char* id, Params_node* needed_params){
     Table_Node* aux = table->elems;
     while (aux != NULL)
     {
-        if (aux->param != NULL && aux->param->is_method_args != 1){
-            aux = aux->next;
-            continue;
-        }
         if (strcmp(aux->id, id) != 0){
             aux = aux->next;
             continue;
         }
 
+        if (needed_params == NULL && aux->param == NULL)
+            return aux;
+        
+        if (aux->param == NULL){
+            aux = aux->next;
+            continue;
+        }
+
+        if (aux->param->is_method_args != 1){
+            aux = aux->next;
+            continue;
+        }
+        
         // printf("%s >> %s\n", id, aux->id);
         if (compare_parms(aux->param, needed_params) == 1)
             return aux;
@@ -229,7 +234,7 @@ void handle_method_body(Table* target, Node* root){
     }
     if (strcmp(root->type, "Id") == 0) {
         root->anotation = procura_tabela_char(root->value, target);
-        printf("%s %s\n", root->value, root->anotation->param);
+        // printf("%s %s\n", root->value, root->anotation->param);
         // return;
     }
 
@@ -259,6 +264,8 @@ void handle_method_body(Table* target, Node* root){
     }
 
     Node * aux = root->son;
+    if (strcmp(root->type, "Call") == 0)
+        aux = aux->brother;
     while (aux != NULL)
     {
         handle_method_body(target, aux);
@@ -287,7 +294,19 @@ void handle_method_body(Table* target, Node* root){
         root->anotation = anota;
     }
     if (strcmp(root->type, "Call") == 0){
-        // handle_call(root, target);
+        Params_node* needed_params = get_call_needed_params(root, target);
+        Table_Node* called_method = find_method(target, root->son->value, needed_params);
+
+        if (called_method == NULL){
+            // printf("No method found!\n");
+        }else{
+            root->anotation = init_param(called_method->type);
+            root->son->anotation = called_method->param;
+            root->son->is_method_anoted = 1;
+            // printf("%s", called_method->id);
+            // print_params(called_method->param);
+            // printf(" -> %s\n", called_method->type);
+        }
     }
 
     

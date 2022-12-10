@@ -10,6 +10,7 @@ typedef struct Node{
         struct Node *son;
         struct Node *brother;
         struct params_node* anotation;
+        int is_method_anoted;
 } Node;
 
 #include "table.h"

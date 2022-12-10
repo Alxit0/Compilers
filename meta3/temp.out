@@ -1,127 +1,3 @@
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	String[]
-args String[]
-	int
-f int
-	int
-i int
-	double
-d double
-	int
-f int
-	int
-i int
-	double
-d double
-	boolean
-b boolean
-	int
-f int
-	int
-i int
-	double
-d double
-	boolean
-b boolean
-	int
-i int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-i int
-	int
-i int
-	int
-f int
-	int
-i int
-	int
-i int
-	boolean
-b boolean
-	int
-f int
-	int
-i int
-	int
-i int
-	boolean
-b boolean
-	int
-i int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
-	int
-f int
 ===== Class Call_Me_Maybe Symbol Table =====
 main	(String[])	void
 f	()	void
@@ -135,58 +11,58 @@ f	(int,double,boolean,int)	boolean
 f	(double,int,double,int)	int
 f	(int,double,int,double)	double
 
-===== Method main((String[])) Symbol Table =====
+===== Method main(String[]) Symbol Table =====
 return		void
 args		String[]	param
 i		int
 d		double
 b		boolean
 
-===== Method f(()) Symbol Table =====
+===== Method f() Symbol Table =====
 return		void
 
-===== Method f((boolean)) Symbol Table =====
+===== Method f(boolean) Symbol Table =====
 return		int
 a		boolean	param
 
-===== Method f((double)) Symbol Table =====
+===== Method f(double) Symbol Table =====
 return		boolean
 a		double	param
 
-===== Method f((int)) Symbol Table =====
+===== Method f(int) Symbol Table =====
 return		double
 a		int	param
 
-===== Method f((String[])) Symbol Table =====
+===== Method f(String[]) Symbol Table =====
 return		void
 a		String[]	param
 
-===== Method f((int,double)) Symbol Table =====
+===== Method f(int,double) Symbol Table =====
 return		boolean
 a		int	param
 b		double	param
 
-===== Method f((int,double,boolean)) Symbol Table =====
+===== Method f(int,double,boolean) Symbol Table =====
 return		boolean
 a		int	param
 b		double	param
 c		boolean	param
 
-===== Method f((int,double,boolean,int)) Symbol Table =====
+===== Method f(int,double,boolean,int) Symbol Table =====
 return		boolean
 a		int	param
 b		double	param
 c		boolean	param
 d		int	param
 
-===== Method f((double,int,double,int)) Symbol Table =====
+===== Method f(double,int,double,int) Symbol Table =====
 return		int
 a		double	param
 b		int	param
 c		double	param
 d		int	param
 
-===== Method f((int,double,int,double)) Symbol Table =====
+===== Method f(int,double,int,double) Symbol Table =====
 return		double
 a		int	param
 b		double	param
@@ -213,154 +89,154 @@ Program
 ......VarDecl
 ........Bool
 ........Id(b)
-......Call
-........Id(f) - int
-......Call
-........Id(f) - int
+......Call - void
+........Id(f) - ()
+......Call - int
+........Id(f) - (boolean)
 ........BoolLit(true) - boolean
-......Call
-........Id(f) - int
+......Call - boolean
+........Id(f) - (double)
 ........RealLit(0e0) - double
-......Call
-........Id(f) - int
+......Call - double
+........Id(f) - (int)
 ........DecLit(123) - int
-......Call
-........Id(f) - int
+......Call - void
+........Id(f) - (String[])
 ........Id(args) - String[]
-......Call
-........Id(f) - int
+......Call - boolean
+........Id(f) - (int,double)
 ........Id(i) - int
 ........Id(d) - double
-......Call
-........Id(f) - int
-........Id(i) - int
-........Id(d) - double
-........Id(b) - boolean
-......Call
-........Id(f) - int
+......Call - boolean
+........Id(f) - (int,double,boolean)
 ........Id(i) - int
 ........Id(d) - double
 ........Id(b) - boolean
+......Call - boolean
+........Id(f) - (int,double,boolean,int)
 ........Id(i) - int
-......Call
-........Id(f) - int
+........Id(d) - double
+........Id(b) - boolean
+........Id(i) - int
+......Call - int
+........Id(f) - (double,int,double,int)
 ........RealLit(0.) - double
 ........DecLit(1) - int
 ........RealLit(2.) - double
 ........DecLit(3) - int
-......Call
-........Id(f) - int
+......Call - double
+........Id(f) - (int,double,int,double)
 ........DecLit(0) - int
 ........RealLit(.1) - double
 ........DecLit(2) - int
 ........RealLit(.3) - double
 ......Call
-........Id(f) - int
+........Id(f)
 ........Id(i) - int
 ........Id(i) - int
 ......Call
-........Id(f) - int
+........Id(f)
 ........Id(i) - int
 ........Id(i) - int
 ........Id(b) - boolean
 ......Call
-........Id(f) - int
+........Id(f)
 ........Id(i) - int
 ........Id(i) - int
 ........Id(b) - boolean
 ........Id(i) - int
 ......Call
-........Id(f) - int
+........Id(f)
 ........RealLit(0.) - double
 ........DecLit(1) - int
 ........DecLit(2) - int
 ........DecLit(3) - int
 ......Call
-........Id(f) - int
+........Id(f)
 ........DecLit(0) - int
 ........DecLit(1) - int
 ........RealLit(2.) - double
 ........DecLit(3) - int
 ......Call
-........Id(f) - int
+........Id(f)
 ........DecLit(0) - int
 ........RealLit(.1) - double
 ........DecLit(2) - int
 ........DecLit(3) - int
 ......Call
-........Id(f) - int
+........Id(f)
 ........DecLit(0) - int
 ........DecLit(1) - int
 ........DecLit(2) - int
 ........RealLit(.3) - double
-......Call
-........Id(f) - int
-........Call
-..........Id(f) - int
-..........Call
-............Id(f) - int
-............Call
-..............Id(f) - int
-..............Call
-................Id(f) - int
-................Call
-..................Id(f) - int
+......Call - int
+........Id(f) - (boolean)
+........Call - boolean
+..........Id(f) - (double)
+..........Call - double
+............Id(f) - (int)
+............Call - int
+..............Id(f) - (boolean)
+..............Call - boolean
+................Id(f) - (double)
+................Call - double
+..................Id(f) - (int)
 ..................DecLit(0) - int
-......Call
-........Id(f) - int
-........Call
-..........Id(f) - int
+......Call - boolean
+........Id(f) - (int,double,boolean)
+........Call - int
+..........Id(f) - (boolean)
 ..........BoolLit(true) - boolean
-........Call
-..........Id(f) - int
+........Call - double
+..........Id(f) - (int)
 ..........DecLit(0) - int
-........Call
-..........Id(f) - int
+........Call - boolean
+..........Id(f) - (double)
 ..........RealLit(0.0) - double
 ......Call
-........Id(f) - int
-........Call
-..........Id(f) - int
+........Id(f)
+........Call - int
+..........Id(f) - (boolean)
 ..........BoolLit(true) - boolean
-........Call
-..........Id(f) - int
+........Call - int
+..........Id(f) - (boolean)
 ..........BoolLit(false) - boolean
-........Call
-..........Id(f) - int
+........Call - boolean
+..........Id(f) - (double)
 ..........RealLit(0.0) - double
 ......Print
-........Call
-..........Id(f) - int
-..........Call
-............Id(f) - int
-............Call
-..............Id(f) - int
-..............Call
-................Id(f) - int
-................Call
-..................Id(f) - int
-..................Call
-....................Id(f) - int
+........Call - int
+..........Id(f) - (boolean)
+..........Call - boolean
+............Id(f) - (double)
+............Call - double
+..............Id(f) - (int)
+..............Call - int
+................Id(f) - (boolean)
+................Call - boolean
+..................Id(f) - (double)
+..................Call - double
+....................Id(f) - (int)
 ....................DecLit(0) - int
 ......Print
-........Call
-..........Id(f) - int
-..........Call
-............Id(f) - int
+........Call - boolean
+..........Id(f) - (int,double,boolean)
+..........Call - int
+............Id(f) - (boolean)
 ............BoolLit(true) - boolean
-..........Call
-............Id(f) - int
+..........Call - double
+............Id(f) - (int)
 ............DecLit(0) - int
-..........Call
-............Id(f) - int
+..........Call - boolean
+............Id(f) - (double)
 ............RealLit(0.0) - double
 ......Print
-........Call
-..........Id(f) - int
+........Call - boolean
+..........Id(f) - (double)
 ..........RealLit(0e0) - double
 ......Print
-........Call
-..........Id(f) - int
+........Call - double
+..........Id(f) - (int)
 ..........DecLit(123) - int
 ..MethodDecl
 ....MethodHeader

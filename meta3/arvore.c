@@ -10,6 +10,7 @@ Node *create_node(char *type, char *value, Node *son){
         new_node->son = son;
         new_node->brother = NULL;
         new_node->anotation = NULL;
+        new_node->is_method_anoted = 0;
         return new_node;
     }
 
@@ -64,9 +65,12 @@ void print_anoted_tree(Node * node, int lvl){
         else
             printf("%s(%s)", node -> type, node->value);
     }
-
-    if (node->anotation != NULL)
+    if (node->is_method_anoted == 1){
+        printf(" - ");
+        print_params(node->anotation);
+    }else if (node->anotation != NULL)
         printf(" - %s", node->anotation->param);
+    
     printf("\n");
     
     print_anoted_tree(node->son, lvl+1);
