@@ -107,10 +107,10 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 <STRING_STATE>.                                       {pos++;string_buff[string_pos++]=yytext[0];}
 
 {AND}                       {if(show_tokens)printf("AND\n");pos+=yyleng;if(return_stf)return AND;}
-{ASSIGN}                    {if(show_tokens)printf("ASSIGN\n");pos+=yyleng;if(return_stf)return ASSIGN;}
-{STAR}                      {if(show_tokens)printf("STAR\n");pos+=yyleng;if(return_stf)return STAR;}
+{ASSIGN}                    {if(show_tokens)printf("ASSIGN\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return ASSIGN;}}
+{STAR}                      {if(show_tokens)printf("STAR\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return STAR;}}
 {COMMA}                     {if(show_tokens)printf("COMMA\n");pos+=yyleng;if(return_stf)return COMMA;}
-{DIV}                       {if(show_tokens)printf("DIV\n");pos+=yyleng;if(return_stf)return DIV;}
+{DIV}                       {if(show_tokens)printf("DIV\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return DIV;}}
 {EQ}                        {if(show_tokens)printf("EQ\n");pos+=yyleng;if(return_stf)return EQ;}
 {GE}                        {if(show_tokens)printf("GE\n");pos+=yyleng;if(return_stf)return GE;}
 {GT}                        {if(show_tokens)printf("GT\n");pos+=yyleng;if(return_stf)return GT;}
@@ -119,12 +119,12 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 {LPAR}                      {if(show_tokens)printf("LPAR\n");pos+=yyleng;if(return_stf)return LPAR;}
 {LSQ}                       {if(show_tokens)printf("LSQ\n");pos+=yyleng;if(return_stf)return LSQ;}
 {LT}                        {if(show_tokens)printf("LT\n");pos+=yyleng;if(return_stf)return LT;}
-{MINUS}                     {if(show_tokens)printf("MINUS\n");pos+=yyleng;if(return_stf)return MINUS;}
-{MOD}                       {if(show_tokens)printf("MOD\n");pos+=yyleng;if(return_stf)return MOD;}
+{MINUS}                     {if(show_tokens)printf("MINUS\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return MINUS;}}
+{MOD}                       {if(show_tokens)printf("MOD\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return MOD;}}
 {NE}                        {if(show_tokens)printf("NE\n");pos+=yyleng;if(return_stf)return NE;}
 {NOT}                       {if(show_tokens)printf("NOT\n");pos+=yyleng;if(return_stf)return NOT;}
 {OR}                        {if(show_tokens)printf("OR\n");pos+=yyleng;if(return_stf)return OR;}
-{PLUS}                      {if(show_tokens)printf("PLUS\n");pos+=yyleng;if(return_stf)return PLUS;}
+{PLUS}                      {if(show_tokens)printf("PLUS\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return PLUS;}}
 {RBRACE}                    {if(show_tokens)printf("RBRACE\n");pos+=yyleng;if(return_stf)return RBRACE;}
 {RPAR}                      {if(show_tokens)printf("RPAR\n");pos+=yyleng;if(return_stf)return RPAR;}
 {RSQ}                       {if(show_tokens)printf("RSQ\n");pos+=yyleng;if(return_stf)return RSQ;}

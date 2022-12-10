@@ -37,7 +37,7 @@ void print_tree(Node * node, int lvl){
         printf("..");
     }
 
-    if (node->value == NULL)
+    if (node->value == NULL || node->value->is_to_show == 0)
         printf("%s\n", node->type);
     else{
         if(strcmp(node->type, "StrLit") == 0)
@@ -58,7 +58,7 @@ void print_anoted_tree(Node * node, int lvl){
         printf("..");
     }
 
-    if (node->value == NULL)
+    if (node->value == NULL || node->value->is_to_show == 0)
         printf("%s", node->type);
     else{
         if(strcmp(node->type, "StrLit") == 0)
@@ -91,5 +91,6 @@ TokenContainer* create_tk_cont(char* string, int pos, int line){
     resp->string = string;
     resp->line = line;
     resp->pos = pos;
+    resp->is_to_show = 1;
     return resp;
 }

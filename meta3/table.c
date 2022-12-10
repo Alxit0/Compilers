@@ -73,6 +73,10 @@ Table_Node * add_element(Table* target, TokenContainer* id, char* type, char* pa
         printf("Line %d, col %d: Symbol %s already defined\n", id->line, id->pos, id->string);
         return checker;
     }
+    if (strcmp(id->string, "_") == 0){
+        printf("Line %d, col %d: Symbol _ is reserved\n", id->line, id->pos);
+        return NULL;
+    }
 
     while (aux->next != NULL)
     {
@@ -133,9 +137,11 @@ void print_method_table(Table* target){
     }
 }
 
-Params_node* procura_tabela_char(char * nome, Table* table) {
-    if (table == NULL)
+Params_node* procura_tabela_char(TokenContainer* id, Table* table) {
+    if (table == NULL){
+        printf("Line %d, col %d: Cannot find symbol %s\n", id->line, id->pos, id->string);
         return init_param("undef");
+    }
     
     Table_Node* aux = table->elems;
     
@@ -147,13 +153,13 @@ Params_node* procura_tabela_char(char * nome, Table* table) {
             continue;
         }
 
-        if (strcmp(aux->id, nome) == 0){
+        if (strcmp(aux->id, id->string) == 0){
             // printf("\t%s\n", aux->type);
             return init_param(aux->type);
         }
         aux = aux->next;
     }
-    return procura_tabela_char(nome, table->parent);
+    return procura_tabela_char(id, table->parent);
 }
 
 

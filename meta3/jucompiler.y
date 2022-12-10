@@ -22,10 +22,10 @@
 
 %token SEMICOLON
 %token COMMA
-%token DIV
+/* %token DIV
 %token STAR
 %token MINUS
-%token PLUS
+%token PLUS */
 %token EQ
 %token GE
 %token LBRACE
@@ -51,9 +51,9 @@
 %token STRING
 %token PRINT
 %token PARSEINT
-%token ASSIGN
+/* %token ASSIGN */
 %token GT
-%token MOD
+/* %token MOD */
 %token LT
 %token VOID
 %token WHILE
@@ -69,7 +69,7 @@
     struct token_container* tk;
 }
 
-%token <tk> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED
+%token <tk> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED PLUS MINUS STAR DIV MOD ASSIGN
 
 %type <tree> Program Aux1 Aux2 MethodDecl FieldDecl Type MethodHeader Aux3 FormalParams Aux4 MethodBody Aux5 VarDecl Aux6 Statement Aux7 StatementPrint MethodInvocation MethodInvocation2 MethodInvocationExpr Assignment ParseArgs Expr Expr2
 
@@ -280,7 +280,7 @@ MethodInvocationExpr:
         ;
 
 Assignment:    
-        ID ASSIGN Expr      {$$ = create_node("Assign", NULL, add_brother(create_node("Id", $1, NULL), $3));}
+        ID ASSIGN Expr      {$$ = create_node("Assign", $2, add_brother(create_node("Id", $1, NULL), $3));}
         ;
 
 ParseArgs:    
@@ -294,11 +294,11 @@ Expr:
     ;
 
 Expr2:  
-        Expr2 PLUS Expr2        {$$ = create_node("Add", NULL, add_brother($1, $3));}
-    |   Expr2 MINUS Expr2       {$$ = create_node("Sub", NULL, add_brother($1, $3));}
-    |   Expr2 STAR Expr2        {$$ = create_node("Mul", NULL, add_brother($1, $3));}
-    |   Expr2 DIV Expr2         {$$ = create_node("Div", NULL, add_brother($1, $3));}
-    |   Expr2 MOD Expr2         {$$ = create_node("Mod", NULL, add_brother($1, $3));}
+        Expr2 PLUS Expr2        {$$ = create_node("Add", $2, add_brother($1, $3));}
+    |   Expr2 MINUS Expr2       {$$ = create_node("Sub", $2, add_brother($1, $3));}
+    |   Expr2 STAR Expr2        {$$ = create_node("Mul", $2, add_brother($1, $3));}
+    |   Expr2 DIV Expr2         {$$ = create_node("Div", $2, add_brother($1, $3));}
+    |   Expr2 MOD Expr2         {$$ = create_node("Mod", $2, add_brother($1, $3));}
     |   Expr2 AND Expr2         {$$ = create_node("And", NULL, add_brother($1, $3));}
     |   Expr2 OR Expr2          {$$ = create_node("Or", NULL, add_brother($1, $3));}
     |   Expr2 XOR Expr2         {$$ = create_node("Xor", NULL, add_brother($1, $3));}

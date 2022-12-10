@@ -8,6 +8,7 @@ typedef struct token_container
     char * string;
     int pos;
     int line;
+    int is_to_show;
 }TokenContainer;
 
 

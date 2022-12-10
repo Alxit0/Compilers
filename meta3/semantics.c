@@ -79,7 +79,7 @@ Params_node* get_call_needed_params(Node* node, Table* table){
     while (aux)
     {
         if (strcmp(aux->type, "Id") == 0){
-            temp = procura_tabela_char(aux->value->string, table);
+            temp = procura_tabela_char(aux->value, table);
         }else{
             temp = aux->anotation;
         }
@@ -232,7 +232,7 @@ void handle_method_body(Table* target, Node* root){
         return;
     }
     if (strcmp(root->type, "Id") == 0) {
-        root->anotation = procura_tabela_char(root->value->string, target);
+        root->anotation = procura_tabela_char(root->value, target);
         // return;
     }
 
@@ -270,8 +270,22 @@ void handle_method_body(Table* target, Node* root){
         aux = aux->brother;
     }
 
-    if (strcmp(root->type, "Assign") == 0 ||
-        strcmp(root->type, "Plus") == 0 ||
+    if (strcmp(root->type, "Assign") == 0){
+        
+        char* type1 = root->son->anotation->param;
+        char* type2 = root->son->brother->anotation->param;
+
+        // printf("%s", root->value->string);
+        if ((strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){
+            // pass
+        }else if (strcmp(type1, type2) != 0){
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+        }
+
+        root->anotation = root->son->anotation;
+    }
+    if (strcmp(root->type, "Plus") == 0 ||
         strcmp(root->type, "Minus") == 0) {
         
         root->anotation = root->son->anotation;
@@ -282,16 +296,37 @@ void handle_method_body(Table* target, Node* root){
         strcmp(root->type, "Div") == 0 ||
         strcmp(root->type, "Mod") == 0) {
         
-        Params_node* anota;
-        if (strcmp(root->son->anotation->param, root->son->brother->anotation->param) == 0) {
-            // printf("%s\n", root->son->anotation->param);
-            anota = root->son->anotation;
+
+
+        char* type1 = root->son->anotation->param;
+        char* type2 = root->son->brother->anotation->param;
+        
+        // printf("%s, %s %s\n", root->type, type1, type2);
+        if (strcmp(type1, "undef") == 0){
+            root->anotation = root->son->anotation;
         }
-        else {
-            anota = init_param("double");
-        }
-        root->anotation = root->son->anotation;
+        else
+            root->anotation = root->son->brother->anotation;
+        
+        if (strcmp(type1, "int") == 0){
+            if (strcmp(type2, "int") == 0 || strcmp(type2, "double") == 0)
+                root->anotation = root->son->brother->anotation;
+            else
+                root->anotation = init_param("undef");
+        }else if (strcmp(type1, "double") == 0)
+            if (strcmp(type2, "int") == 0 || strcmp(type2, "double") == 0)
+                root->anotation = root->son->anotation;
+            else
+                root->anotation = init_param("undef");
+        else
+            root->anotation = init_param("undef");
+        
+        if (strcmp(root->anotation->param, "undef") == 0)
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+
     }
+
     if (strcmp(root->type, "Call") == 0){
         Params_node* needed_params = get_call_needed_params(root, target);
         Table_Node* called_method = find_method(target, root->son->value->string, needed_params);
