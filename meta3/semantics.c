@@ -360,7 +360,8 @@ void handle_method_body(Table* target, Node* root){
     }
 
     if (strcmp(root->type, "Not") == 0){
-        if (strcmp(root->son->anotation->param, "boolean") != 0){
+        if (strcmp(root->son->anotation->param, "boolean") != 0 &&
+            strcmp(root->son->anotation->param, "undef") != 0){
             printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
             root->value->line, root->value->pos, root->value->string, root->son->anotation->param);
         }
@@ -526,14 +527,14 @@ void handle_method_body(Table* target, Node* root){
         char *type1 = root->son->anotation->param;
         char *type2 = root->son->brother->anotation->param;
         // printf("Ola\n");
-        if (strcmp(root->son->type, "Id") == 0 &&
-        strcmp(root->son->brother->type, "Id") == 0){
-            root->anotation = init_param("none");
-        }
+        // if (strcmp(root->son->type, "Id") == 0 &&
+        // strcmp(root->son->brother->type, "Id") == 0){
+        //     root->anotation = init_param("none");
+        // }
         if (strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0){
-            if (strcmp(root->son->brother->type, "Id") == 0)
-                root->anotation = init_param("none");
-            else 
+            // if (strcmp(root->son->brother->type, "Id") == 0)
+            //     root->anotation = init_param("none");
+            // else 
                 root->son->anotation = init_param("int");
         }else{
             printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
