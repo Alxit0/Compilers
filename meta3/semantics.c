@@ -4,7 +4,6 @@
 
 #include "semantics.h"
 
-
 int compare_parms(Params_node* pr1, Params_node* pr2){
     
     Params_node* param1 = pr1;
@@ -96,17 +95,29 @@ Params_node* get_call_needed_params(Node* node, Table* table){
     return head;
 }
 
-Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_params){
+Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_params, int found){
     if (table == NULL){
-        printf("Line %d, col %d: Cannot find symbol %s", id->line, id->pos, id->string);
-        if (needed_params == NULL){
-            printf("()\n");
+        if (found > 1){
+            printf("Line %d, col %d: Reference to method %s", id->line, id->pos, id->string);
+            if (needed_params == NULL){
+                printf("()\n");
+                return NULL;
+            }
+            needed_params->is_method_args = 1;
+            print_params(needed_params);
+            printf(" is ambiguous\n");
+            return NULL;
+        }else{
+            printf("Line %d, col %d: Cannot find symbol %s", id->line, id->pos, id->string);
+            if (needed_params == NULL){
+                printf("()\n");
+                return NULL;
+            }
+            needed_params->is_method_args = 1;
+            print_params(needed_params);
+            printf("\n");
             return NULL;
         }
-        needed_params->is_method_args = 1;
-        print_params(needed_params);
-        printf("\n");
-        return NULL;
     }
     Table_Node* aux = table->elems;
     while (aux != NULL)
@@ -131,7 +142,8 @@ Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_pa
     }
 
     aux = table->elems;
-
+    int possible_methods = 0;
+    Table_Node* resp;
     while (aux != NULL)
     {
         if (strcmp(aux->id, id->string) != 0){
@@ -147,12 +159,19 @@ Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_pa
             continue;
         }
         
-        if (compare_parms_diferent(aux->param, needed_params) == 1)
-            return aux;
+        if (compare_parms_diferent(aux->param, needed_params) == 1){
+            resp = aux;
+            possible_methods++;
+        }
+            // return aux;
         aux = aux->next;
     }
 
-    return find_method(table->parent, id, needed_params);
+    if (possible_methods == 1){
+        return resp;
+    }
+
+    return find_method(table->parent, id, needed_params, found+possible_methods);
 }
 
 
@@ -287,8 +306,15 @@ void handle_method_body(Table* target, Node* root){
         handle_method_body(target, aux);
         aux = aux->brother;
     }
-    if (strcmp(root->type, "Not") == 0 ||
-        strcmp(root->type, "BoolLit") == 0){
+
+    if (strcmp(root->type, "Not") == 0){
+        if (strcmp(root->son->anotation->param, "boolean") != 0){
+            printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
+            root->value->line, root->value->pos, root->value->string, root->son->anotation->param);
+        }
+        root->anotation = init_param("boolean");
+    }
+    if (strcmp(root->type, "BoolLit") == 0){
         root->anotation = init_param("boolean");
     }
     if (strcmp(root->type, "Eq") == 0 ||
@@ -338,7 +364,6 @@ void handle_method_body(Table* target, Node* root){
     }
     if (strcmp(root->type, "Plus") == 0 ||
         strcmp(root->type, "Minus") == 0) {
-        
         char* type = root->son->anotation->param;
         if (strcmp(type, "int") == 0 || strcmp(type, "double") == 0)
             root->anotation = root->son->anotation;
@@ -449,7 +474,7 @@ void handle_method_body(Table* target, Node* root){
     if (strcmp(root->type, "Call") == 0){
 
         Params_node* needed_params = get_call_needed_params(root, target);
-        Table_Node* called_method = find_method(target, root->son->value, needed_params);
+        Table_Node* called_method = find_method(target, root->son->value, needed_params, 0);
 
         TokenContainer* temp = root->son->value;
 

@@ -310,8 +310,8 @@ Expr2:
     |   Expr2 LE Expr2          {$$ = create_node("Le", $2, add_brother($1, $3));}
     |   Expr2 LT Expr2          {$$ = create_node("Lt", $2, add_brother($1, $3));}
     |   Expr2 NE Expr2          {$$ = create_node("Ne", $2, add_brother($1, $3));}
-    |   PLUS Expr2 %prec NOT    {$$ = create_node("Plus", NULL, $2);}
-    |   MINUS Expr2 %prec NOT   {$$ = create_node("Minus", NULL, $2);}
+    |   PLUS Expr2 %prec NOT    {$$ = create_node("Plus", $1, $2);}
+    |   MINUS Expr2 %prec NOT   {$$ = create_node("Minus", $1, $2);}
     |   NOT Expr2               {$$ = create_node("Not", $1, $2);}
     |   LPAR Expr RPAR          {$$ = $2;}
     |   LPAR error RPAR         {$$ = NULL;syntax_error_found = 1;}
