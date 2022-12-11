@@ -101,14 +101,14 @@ void print_class_table(Table* target){
     {
         // printf("%s\t%s\t%s\n", aux->id, aux->type);
 
-        printf("%s\t", aux->id);
+        printf("%s", aux->id);
+        
+        printf("\t");
         print_params(aux->param);
         
-        if (aux->param == NULL || aux->param->is_method_args == 1){
-            printf("\t%s", aux->type);
-        }
-        else
-            printf("%s", aux->type);
+        printf("\t%s", aux->type);
+        
+        
         aux = aux->next;
         printf("\n");
     }

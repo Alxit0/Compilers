@@ -54,6 +54,7 @@ void print_anoted_tree(Node * node, int lvl){
     if (node == NULL)
         return;
     
+
     for (int i = 0; i < lvl; ++i){
         printf("..");
     }
@@ -66,6 +67,13 @@ void print_anoted_tree(Node * node, int lvl){
         else
             printf("%s(%s)", node -> type, node->value->string);
     }
+    if (node->anotation != NULL && strcmp(node->anotation->param, "none") == 0){
+        printf("\n");
+        print_tree(node->son, lvl+1);
+        print_anoted_tree(node->brother, lvl);
+        return;
+    }
+
     if (node->is_method_anoted == 1){
         printf(" - ");
         print_params(node->anotation);
@@ -73,7 +81,7 @@ void print_anoted_tree(Node * node, int lvl){
         printf(" - %s", node->anotation->param);
     
     printf("\n");
-    
+
     print_anoted_tree(node->son, lvl+1);
     print_anoted_tree(node->brother, lvl);
 }

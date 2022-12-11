@@ -96,14 +96,22 @@ Params_node* get_call_needed_params(Node* node, Table* table){
     return head;
 }
 
-Table_Node* find_method(Table* table, char* id, Params_node* needed_params){
-    if (table == NULL)
+Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_params){
+    if (table == NULL){
+        printf("Line %d, col %d: Cannot find symbol %s", id->line, id->pos, id->string);
+        if (needed_params == NULL){
+            printf("()\n");
+            return NULL;
+        }
+        needed_params->is_method_args = 1;
+        print_params(needed_params);
+        printf("\n");
         return NULL;
-    
+    }
     Table_Node* aux = table->elems;
     while (aux != NULL)
     {
-        if (strcmp(aux->id, id) != 0){
+        if (strcmp(aux->id, id->string) != 0){
             aux = aux->next;
             continue;
         }
@@ -126,7 +134,7 @@ Table_Node* find_method(Table* table, char* id, Params_node* needed_params){
 
     while (aux != NULL)
     {
-        if (strcmp(aux->id, id) != 0){
+        if (strcmp(aux->id, id->string) != 0){
             aux = aux->next;
             continue;
         }
@@ -177,6 +185,7 @@ void analiza_programa(Node* root){
 
     // update_tree(root, table_list);
     generate_tree(root, table_list);
+    // printf("Ola")
     print_table_list(table_list);
     print_anoted_tree(root, 0);
     // print_class_table(class_table);
@@ -224,9 +233,11 @@ Table* analiza_method_decl(Node* root, Table* class_table){
 }
 
 void handle_method_body(Table* target, Node* root){
+
     if (root == NULL){
         return;
     }
+    // printf("%s\n", root->type);
     if (strcmp(root->type, "VarDecl")==0){
         add_element(target, root->son->brother->value, root->son->type, "", 1);
         return;
@@ -235,28 +246,48 @@ void handle_method_body(Table* target, Node* root){
         root->anotation = procura_tabela_char(root->value, target);
         // return;
     }
-
-    if (strcmp(root->type, "DecLit") * strcmp(root->type, "ParseArgs") * strcmp(root->type, "Length") == 0){
+    if (strcmp(root->type, "DecLit") * 
+        strcmp(root->type, "ParseArgs") * 
+        strcmp(root->type, "Length") == 0){
         root->anotation = init_param("int");
         // return;
     }
     if (strcmp(root->type, "RealLit") == 0){
         root->anotation = init_param("double");
-        // return;
+        
+        // //convert string to float
+        // char * numero_aux = strdup(root->value->string);
+        // for (int i=0; i<strlen(numero_aux); i++){
+        //     if (numero_aux[i] == '_'){
+        //         for (int j=i; j<strlen(numero_aux);j++){
+        //             *(numero_aux+j) = *(numero_aux+j+1);
+        //         }
+        //         i--;
+        //     }
+        // }
+        // // printf("%s\n", numero_aux);
+        // char* pointer = NULL;
+        // long numero = strtol(numero_aux, &pointer, 10);
+        // if (numero > 2147483647 || numero < -2147483648)
+        //     printf("Line %d, col %d: Number %s out of bounds\n",
+        //     root->value->line, root->value->pos, root->value->string);
+        // // printf("float value : %4.8f\n", atof(root->value->string));
     }
     if (strcmp(root->type, "StrLit") == 0){
         root->anotation = init_param("String");
         // return;
     }
     if (strcmp(root->type, "Eq") == 0 ||
-            strcmp(root->type, "Gt") == 0 ||
-            strcmp(root->type, "Ge") == 0 ||
-            strcmp(root->type, "Lt") == 0 ||
-            strcmp(root->type, "Le") == 0 ||
-            strcmp(root->type, "And") == 0 ||
-            strcmp(root->type, "Or") == 0 ||
-            strcmp(root->type, "Not") == 0 ||
-            strcmp(root->type, "BoolLit") == 0){
+        strcmp(root->type, "Ne") == 0 ||
+        strcmp(root->type, "Gt") == 0 ||
+        strcmp(root->type, "Ge") == 0 ||
+        strcmp(root->type, "Lt") == 0 ||
+        strcmp(root->type, "Le") == 0 ||
+        strcmp(root->type, "And") == 0 ||
+        strcmp(root->type, "Or") == 0 ||
+        strcmp(root->type, "Xor") == 0 ||
+        strcmp(root->type, "Not") == 0 ||
+        strcmp(root->type, "BoolLit") == 0){
         root->anotation = init_param("boolean");
         // return;
     }
@@ -271,7 +302,6 @@ void handle_method_body(Table* target, Node* root){
     }
 
     if (strcmp(root->type, "Assign") == 0){
-        
         char* type1 = root->son->anotation->param;
         char* type2 = root->son->brother->anotation->param;
 
@@ -288,7 +318,14 @@ void handle_method_body(Table* target, Node* root){
     if (strcmp(root->type, "Plus") == 0 ||
         strcmp(root->type, "Minus") == 0) {
         
-        root->anotation = root->son->anotation;
+        char* type = root->son->anotation->param;
+        if (strcmp(type, "int") == 0 || strcmp(type, "double") == 0)
+            root->anotation = root->son->anotation;
+        else{
+            printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
+                root->value->line, root->value->pos, root->value->string, type);
+            root->anotation = init_param("undef");
+        }
     }
     if (strcmp(root->type, "Add") == 0 ||
         strcmp(root->type, "Sub") == 0 ||
@@ -326,25 +363,53 @@ void handle_method_body(Table* target, Node* root){
                 root->value->line, root->value->pos, root->value->string, type1, type2);
 
     }
+    if (strcmp(root->type, "Lshift") == 0 ||
+        strcmp(root->type, "Rshift") == 0){
+        
 
+        root->anotation = init_param("none");
+    }
+    if (strcmp(root->type, "Return") == 0){
+        
+        Node* aux = root->son;
+        char* given_param = "void";
+        if (aux != NULL)
+            given_param = aux->anotation->param;
+
+        if (strcmp(given_param, target->elems->type) != 0)
+            printf("Line %d, col %d: Incompatible type %s in %s statement\n",
+                aux->value->line, aux->value->pos, given_param, root->value->string);
+    }
+    if (strcmp(root->type, "Print") == 0){
+        
+        Node* aux = root->son;
+
+        if (strcmp(aux->anotation->param, "undef") == 0)
+            printf("Line %d, col %d: Incompatible type %s in %s statement\n",
+                aux->value->line, aux->value->pos, aux->anotation->param, root->value->string);
+    }
     if (strcmp(root->type, "Call") == 0){
-        Params_node* needed_params = get_call_needed_params(root, target);
-        Table_Node* called_method = find_method(target, root->son->value->string, needed_params);
 
+        Params_node* needed_params = get_call_needed_params(root, target);
+        Table_Node* called_method = find_method(target, root->son->value, needed_params);
+
+        TokenContainer* temp = root->son->value;
+
+        root->value = create_tk_cont(temp->string, temp->pos, temp->line);
+        root->value->is_to_show = 0;
+        
         if (called_method == NULL){
             // printf("No method found!\n");
+            root->anotation = init_param("undef");
             root->son->anotation = init_param("undef");
+
+            return;
         }else{
             root->anotation = init_param(called_method->type);
             root->son->anotation = called_method->param;
             root->son->is_method_anoted = 1;
-            // printf("%s", called_method->id);
-            // print_params(called_method->param);
-            // printf(" -> %s\n", called_method->type);
         }
     }
-
-    
 }
 
 void generate_tree(Node* root, Table_List* table_list){
