@@ -412,8 +412,15 @@ void handle_method_body(Table* target, Node* root){
         // return;
     }
     if (strcmp(root->type, "Assign") == 0){
+        
+        // if (strcmp(root->son->brother->type, "Lshift") == 0 
+        //     || strcmp(root->son->brother->type, "Rshift") == 0)
+        //     root->son->brother->anotation = init_param("none");
+
+        
         char* type1 = root->son->anotation->param;
         char* type2 = root->son->brother->anotation->param;
+
 
         // printf("%s", root->value->string);
         if ((strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){
@@ -497,6 +504,10 @@ void handle_method_body(Table* target, Node* root){
         char *type1 = root->son->anotation->param;
         char *type2 = root->son->brother->anotation->param;
         // printf("Ola\n");
+        if (strcmp(root->son->type, "Id") == 0 &&
+        strcmp(root->son->brother->type, "Id") == 0){
+            root->anotation = init_param("none");
+        }
         if (strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0){
             root->son->anotation = init_param("int");
         }else{
