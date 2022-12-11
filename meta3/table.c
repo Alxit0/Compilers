@@ -154,7 +154,7 @@ Params_node* procura_tabela_char(TokenContainer* id, Table* table, int check_fin
             continue;
         }
 
-        if (strcmp(aux->id, id->string) == 0){
+        if (strcmp(aux->id, id->string) == 0 && aux->param->is_method_args == 0){
             // printf("\t%s\n", aux->type);
             return init_param(aux->type);
         }

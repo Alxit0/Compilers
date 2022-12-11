@@ -201,8 +201,9 @@ void analiza_programa(Node* root, int show_tables){
         
         if (strcmp(aux->type, "MethodDecl") == 0){
             Table* aux2 = analiza_method_decl(aux, class_table);
-            if (aux2 != NULL)
-                add_table(table_list, aux2, "method");
+            if (aux2 != NULL){
+                add_table(table_list, aux2, "method")->node = aux;
+            }
         }
         aux = aux->brother;
     }
@@ -530,7 +531,10 @@ void handle_method_body(Table* target, Node* root){
             root->anotation = init_param("none");
         }
         if (strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0){
-            root->son->anotation = init_param("int");
+            if (strcmp(root->son->brother->type, "Id") == 0)
+                root->anotation = init_param("none");
+            else 
+                root->son->anotation = init_param("int");
         }else{
             printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
                 root->value->line, root->value->pos, root->value->string, type1, type2);
@@ -617,15 +621,13 @@ void generate_tree(Node* root, Table_List* table_list){
         return;
     
     TLNode* table_node_aux = table_list->head->next;  // 1a is the class one
-    Node* cur_node = root->son;
-    while (cur_node != NULL && table_node_aux != NULL)
+    while (table_node_aux != NULL)
     {
+        Node* cur_node = table_node_aux->node;
         if (strcmp(cur_node->type, "MethodDecl") != 0){
-            cur_node = cur_node->brother;
             continue;
         }
         handle_method_body(table_node_aux->table, cur_node->son->brother);
-        cur_node = cur_node->brother;
         table_node_aux = table_node_aux->next;
     }
 }

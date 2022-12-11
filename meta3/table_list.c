@@ -11,24 +11,25 @@ Table_List* init_table_list(){
     return temp;
 }
 
-void add_table(Table_List* table_list, Table* table, char* table_type){
+TLNode* add_table(Table_List* table_list, Table* table, char* table_type){
     if (table_list == NULL)
-        return;
+        return NULL;
     
     TLNode* temp = (TLNode*) malloc(sizeof(TLNode));
     temp->table = table;
     temp->table_type = table_type;
+    temp->node = NULL;
     
     if (table_list->head == NULL){
         table_list->head = temp;
         table_list->tail = temp;
-        return;
+        return temp;
 
     }
 
     table_list->tail->next = temp;
     table_list->tail = temp;
-
+    return temp;
 }
 
 void print_table_list(Table_List* table_list){

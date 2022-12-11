@@ -8,6 +8,7 @@ typedef struct table_list_node
     Table* table;
     char* table_type;
     struct table_list_node* next;
+    Node* node;
 }TLNode;
 
 typedef struct table_list
@@ -17,7 +18,7 @@ typedef struct table_list
 }Table_List;
 
 Table_List* init_table_list();
-void add_table(Table_List* table_list, Table* table, char* table_type);
+TLNode* add_table(Table_List* table_list, Table* table, char* table_type);
 void print_table_list(Table_List* table_list);
 
 #endif

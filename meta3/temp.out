@@ -7,6 +7,11 @@ Line 57, col 26: Symbol funcao already defined
 Line 10, col 9: Operator + cannot be applied to types boolean, boolean
 Line 10, col 15: Operator == cannot be applied to types undef, int
 Line 13, col 6: Operator = cannot be applied to types boolean, int
+Line 62, col 10: Operator = cannot be applied to types boolean, double
+Line 63, col 10: Operator = cannot be applied to types int, double
+Line 64, col 10: Operator = cannot be applied to types int, double
+Line 66, col 13: Operator Integer.parseInt cannot be applied to types boolean, double
+Line 69, col 12: Operator = cannot be applied to types int, boolean
 ===== Class Java Symbol Table =====
 funcao2	(String[])	void
 x	(double,int)	double
@@ -47,13 +52,16 @@ return		int
 a		int	param
 b		int	param
 c		double	param
-x		int
 
 ===== Method funcao3(int,int,boolean) Symbol Table =====
 return		boolean
 a		int	param
 b		int	param
 c		boolean	param
+x		int
+y		int
+z		int
+w		int
 
 ===== Method funcao(int,double) Symbol Table =====
 return		int
@@ -63,15 +71,13 @@ i		int	param
 return		void
 i		double	param
 funcao		int	param
+m		boolean
 
 ===== Method funcao(double,double) Symbol Table =====
 return		double
 i		double	param
 funcao		double	param
-x		int
-y		int
-z		int
-w		int
+m		int
 
 ===== Method funcao(int,int) Symbol Table =====
 return		int
@@ -79,12 +85,22 @@ i		int	param
 
 ===== Method maine() Symbol Table =====
 return		void
-m		boolean
+a		int
+b		int
+c		int
+d		int
+e		double
+f		double
+g		double
+h		double
+i		boolean
+j		boolean
+k		boolean
+l		boolean
 
 ===== Method ola56(int) Symbol Table =====
 return		int
 x1		int	param
-m		int
 
 Program
 ..Id(Java)
@@ -183,9 +199,9 @@ Program
 ......VarDecl
 ........Int
 ........Id(x)
-......Assign - int
-........Id(a) - int
-........Id(x) - int
+......Assign
+........Id(a)
+........Id(x)
 ..FieldDecl
 ....Bool
 ....Id(a)
@@ -372,67 +388,67 @@ Program
 ......VarDecl
 ........Bool
 ........Id(l)
-......Assign
-........Id(k)
-........Add
-..........Add
-............DecLit(1)
-............DecLit(1)
-..........Mod
-............Mul
-..............Div
-................Id(e)
-................DecLit(4)
-..............Minus
-................RealLit(4.3)
-............DecLit(10)
-......Assign
-........Id(a)
-........Add
-..........Add
-............DecLit(1)
-............DecLit(1)
-..........Mod
-............Mul
-..............Div
-................Id(e)
-................DecLit(4)
-..............Minus
-................RealLit(4.3)
-............DecLit(10)
-......Assign
-........Id(b)
-........Add
-..........Add
-............DecLit(1)
-............DecLit(1)
-..........Mod
-............Mul
-..............Div
-................Id(e)
-................DecLit(4)
-..............Minus
-................RealLit(4.3)
-............DecLit(10)
-......Assign
-........Id(i)
-........Not
-..........Not
-............Not
-..............Not
-................Not
-..................Not
-....................Not
-......................Id(l)
-......Assign
-........Id(f)
-........ParseArgs
-..........Id(i)
-..........Add
-............Add
-..............DecLit(1)
-..............RealLit(1.0)
-............DecLit(2)
+......Assign - boolean
+........Id(k) - boolean
+........Add - double
+..........Add - int
+............DecLit(1) - int
+............DecLit(1) - int
+..........Mod - double
+............Mul - double
+..............Div - double
+................Id(e) - double
+................DecLit(4) - int
+..............Minus - double
+................RealLit(4.3) - double
+............DecLit(10) - int
+......Assign - int
+........Id(a) - int
+........Add - double
+..........Add - int
+............DecLit(1) - int
+............DecLit(1) - int
+..........Mod - double
+............Mul - double
+..............Div - double
+................Id(e) - double
+................DecLit(4) - int
+..............Minus - double
+................RealLit(4.3) - double
+............DecLit(10) - int
+......Assign - int
+........Id(b) - int
+........Add - double
+..........Add - int
+............DecLit(1) - int
+............DecLit(1) - int
+..........Mod - double
+............Mul - double
+..............Div - double
+................Id(e) - double
+................DecLit(4) - int
+..............Minus - double
+................RealLit(4.3) - double
+............DecLit(10) - int
+......Assign - boolean
+........Id(i) - boolean
+........Not - boolean
+..........Not - boolean
+............Not - boolean
+..............Not - boolean
+................Not - boolean
+..................Not - boolean
+....................Not - boolean
+......................Id(l) - boolean
+......Assign - double
+........Id(f) - double
+........ParseArgs - int
+..........Id(i) - boolean
+..........Add - double
+............Add - double
+..............DecLit(1) - int
+..............RealLit(1.0) - double
+............DecLit(2) - int
 ..MethodDecl
 ....MethodHeader
 ......Int
@@ -442,11 +458,11 @@ Program
 ..........Int
 ..........Id(x1)
 ....MethodBody
-......Assign
-........Id(x1)
-........Id(ola56)
+......Assign - int
+........Id(x1) - int
+........Id(ola56) - boolean
 ......Print
-........StrLit("")
+........StrLit("") - String
 ..FieldDecl
 ....Bool
 ....Id(ola56)

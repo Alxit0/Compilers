@@ -66,7 +66,7 @@ class Call_Me_Maybe {
 
     public static int f(double a, int b, double c, int d) {
     }
-    
+
     public static double f(int a, double b, int c, double d) {
     }
 
