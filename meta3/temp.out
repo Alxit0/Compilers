@@ -4,7 +4,6 @@ Line 34, col 22: Symbol funcao3(int,int,double) already defined
 Line 43, col 41: Symbol i already defined
 Line 55, col 40: Symbol i already defined
 Line 57, col 26: Symbol funcao already defined
-Line 72, col 27: Symbol ola56 already defined
 Line 10, col 9: Operator + cannot be applied to types boolean, boolean
 Line 10, col 15: Operator == cannot be applied to types undef, int
 Line 13, col 6: Operator = cannot be applied to types boolean, int
@@ -22,6 +21,7 @@ funcao	(double,double)	double
 funcao	(int,int)	int
 maine	()	void
 ola56	(int)	int
+ola56		boolean
 
 ===== Method funcao2(String[]) Symbol Table =====
 return		void

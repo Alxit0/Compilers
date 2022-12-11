@@ -221,7 +221,7 @@ void analiza_field_decl(Node* root, Table* class_table){
     if (root == NULL)
         return;
 
-    add_element(class_table, root->son->brother->value, root->son->type, "", 1);
+    add_element(class_table, root->son->brother->value, root->son->type, "", 1, 0);
 }
 
 Table* analiza_method_decl(Node* root, Table* class_table){
@@ -235,13 +235,13 @@ Table* analiza_method_decl(Node* root, Table* class_table){
     method_table->method = "Method";
     method_table->parent = class_table;
 
-    add_element(method_table, create_tk_cont("return", -1, -1), methodHeader->son->type, "", 0);
+    add_element(method_table, create_tk_cont("return", -1, -1), methodHeader->son->type, "", 0, 0);
 
     Node* aux = methodHeader->son->brother->brother->son; //ParamDecl
     while (aux != NULL)
     {
         add_param(method_table, aux->son->type);
-        add_element(method_table, aux->son->brother->value, aux->son->type, "param", 1);
+        add_element(method_table, aux->son->brother->value, aux->son->type, "param", 1, 0);
         aux = aux->brother;
     }
 
@@ -260,7 +260,8 @@ Table* analiza_method_decl(Node* root, Table* class_table){
         printf(" already defined\n");
         return NULL;
     }
-    Table_Node * aux2 = add_element(class_table, create_tk_cont(method_table->name, -1, -1), methodHeader->son->type, "", 0);
+
+    Table_Node * aux2 = add_element(class_table, create_tk_cont(method_table->name, -1, -1), methodHeader->son->type, "", 0, 1);
     free(aux2->param);
     aux2->param = method_table->params_head;
     if (aux2->param != NULL)
@@ -280,7 +281,7 @@ void handle_method_body(Table* target, Node* root){
     }
     // printf("%s\n", root->type);
     if (strcmp(root->type, "VarDecl")==0){
-        add_element(target, root->son->brother->value, root->son->type, "", 1);
+        add_element(target, root->son->brother->value, root->son->type, "", 1, 0);
         return;
     }
     if (strcmp(root->type, "Id") == 0) {

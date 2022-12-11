@@ -6,7 +6,7 @@
 
 void print_params(Params_node* head);
 char * translate_param(char * param);
-Table_Node* check_symbol_extistance(Table* table, char* id);
+Table_Node* check_symbol_extistance(Table* table, char* id, int is_method);
 
 // public funcs
 Table* init_table(Node* root){
@@ -51,7 +51,7 @@ void add_param(Table* target, char* value){
 
 }
 
-Table_Node * add_element(Table* target, TokenContainer* id, char* type, char* param, int check){
+Table_Node * add_element(Table* target, TokenContainer* id, char* type, char* param, int check, int is_method){
     if (target == NULL)
         return NULL;
     
@@ -67,7 +67,7 @@ Table_Node * add_element(Table* target, TokenContainer* id, char* type, char* pa
     }
     
     Table_Node* aux = target->elems;
-    Table_Node* checker = check_symbol_extistance(target, id->string);
+    Table_Node* checker = check_symbol_extistance(target, id->string, is_method);
     
     if (check == 1 && checker != NULL){
         printf("Line %d, col %d: Symbol %s already defined\n", id->line, id->pos, id->string);
@@ -201,15 +201,18 @@ void print_params(Params_node* head){
         printf(")");
 }
 
-Table_Node* check_symbol_extistance(Table* table, char* id){
+Table_Node* check_symbol_extistance(Table* table, char* id, int is_method){
     if (table == NULL)
         return NULL;
-    
     Table_Node* aux = table->elems;
     while (aux)
     {
-        if (strcmp(aux->id, id) == 0)
-            return aux;
+        // printf("Ola %d\n", aux->param->is_method_args);
+        int temp = 0;
+        if (aux->param != NULL)
+            temp = aux->param->is_method_args;
+        if (strcmp(aux->id, id) == 0 && (is_method == temp)){
+            return aux;}
         aux = aux->next;
     }
     return NULL;
