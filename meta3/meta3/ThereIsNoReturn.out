@@ -1,0 +1,325 @@
+Line 4, col 24: Cannot find symbol a
+Line 4, col 19: Cannot find symbol func(undef)
+Line 4, col 18: Operator - cannot be applied to type undef
+Line 4, col 16: Operator * cannot be applied to types int, undef
+Line 4, col 12: Operator = cannot be applied to types int, undef
+Line 5, col 24: Cannot find symbol a
+Line 5, col 19: Cannot find symbol func(undef)
+Line 5, col 18: Operator + cannot be applied to type undef
+Line 5, col 16: Operator * cannot be applied to types int, undef
+Line 5, col 12: Operator = cannot be applied to types int, undef
+Line 8, col 19: Operator Integer.parseInt cannot be applied to types int, int
+Line 9, col 19: Operator Integer.parseInt cannot be applied to types int, int
+Line 10, col 21: Operator .length cannot be applied to type int
+Line 11, col 21: Operator .length cannot be applied to type int
+Line 18, col 16: Incompatible type double in return statement
+Line 19, col 16: Incompatible type boolean in return statement
+Line 27, col 17: Incompatible type boolean in return statement
+Line 28, col 17: Incompatible type boolean in return statement
+Line 29, col 29: Operator == cannot be applied to types boolean, int
+Line 29, col 29: Incompatible type boolean in return statement
+Line 30, col 33: Cannot find symbol args
+Line 30, col 16: Operator Integer.parseInt cannot be applied to types undef, int
+Line 31, col 33: Cannot find symbol args
+Line 31, col 38: Cannot find symbol args
+Line 31, col 16: Operator Integer.parseInt cannot be applied to types undef, undef
+Line 32, col 16: Cannot find symbol args
+Line 32, col 20: Operator .length cannot be applied to type undef
+Line 33, col 17: Operator .length cannot be applied to type int
+Line 37, col 16: Operator ! cannot be applied to type int
+Line 37, col 16: Incompatible type boolean in return statement
+Line 38, col 16: Cannot find symbol NaoTaFacil()
+Line 38, col 16: Incompatible type undef in return statement
+Line 39, col 17: Cannot find symbol NaoTaFacil()
+Line 39, col 16: Operator - cannot be applied to type undef
+Line 39, col 16: Incompatible type undef in return statement
+Line 40, col 17: Cannot find symbol NaoTaFacil()
+Line 40, col 16: Operator + cannot be applied to type undef
+Line 40, col 16: Incompatible type undef in return statement
+Line 41, col 17: Cannot find symbol NaoTaFacil()
+Line 41, col 16: Incompatible type boolean in return statement
+Line 42, col 16: Incompatible type double in return statement
+Line 43, col 16: Incompatible type double in return statement
+Line 44, col 16: Incompatible type double in return statement
+Line 45, col 16: Operator ! cannot be applied to type double
+Line 45, col 16: Incompatible type boolean in return statement
+Line 46, col 18: Operator = cannot be applied to types int, boolean
+Line 49, col 16: Operator ! cannot be applied to type int
+Line 49, col 16: Incompatible type boolean in return statement
+===== Class Ta_Puxado Symbol Table =====
+HojeNaoDa	(int)	int
+NaoTaFacil	(int)	boolean
+MyBad	(int)	double
+
+===== Method HojeNaoDa(int) Symbol Table =====
+return		int
+id		int	param
+i		int
+d		double
+b		boolean
+
+===== Method NaoTaFacil(int) Symbol Table =====
+return		boolean
+id		int	param
+
+===== Method MyBad(int) Symbol Table =====
+return		double
+id		int	param
+
+Program
+..Id(Ta_Puxado)
+..MethodDecl
+....MethodHeader
+......Int
+......Id(HojeNaoDa)
+......MethodParams
+........ParamDecl
+..........Int
+..........Id(id)
+....MethodBody
+......Assign - int
+........Id(id) - int
+........Mul - undef
+..........DecLit(1) - int
+..........Minus - undef
+............Call - undef
+..............Id(func) - undef
+..............Id(a) - undef
+......Assign - int
+........Id(id) - int
+........Mul - undef
+..........DecLit(1) - int
+..........Plus - undef
+............Call - undef
+..............Id(func) - undef
+..............Id(a) - undef
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Minus - int
+............DecLit(1) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Plus - int
+............DecLit(1) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Minus - int
+............ParseArgs - int
+..............Id(id) - int
+..............DecLit(1) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Plus - int
+............ParseArgs - int
+..............Id(id) - int
+..............DecLit(1) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Minus - int
+............Length - int
+..............Id(id) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Plus - int
+............Length - int
+..............Id(id) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Minus - int
+............Plus - int
+..............DecLit(1) - int
+......Assign - int
+........Id(id) - int
+........Mul - int
+..........DecLit(1) - int
+..........Minus - int
+............Plus - int
+..............Minus - int
+................Plus - int
+..................Minus - int
+....................Plus - int
+......................Minus - int
+........................DecLit(1) - int
+......VarDecl
+........Int
+........Id(i)
+......VarDecl
+........Double
+........Id(d)
+......VarDecl
+........Bool
+........Id(b)
+......Return
+........Id(i) - int
+......Return
+........Id(d) - double
+......Return
+........Id(b) - boolean
+......Return
+........Add - int
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Sub - int
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Mul - int
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Div - int
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Mod - int
+..........Id(i) - int
+..........DecLit(1) - int
+......Return
+........Lshift - int
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Rshift - int
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Lt - boolean
+..........Id(i) - int
+..........Id(i) - int
+......Return
+........Eq - boolean
+..........Id(i) - int
+..........DecLit(1) - int
+......Return
+........Eq - boolean
+..........Lt - boolean
+............Sub - int
+..............Add - int
+................Id(i) - int
+................Div - int
+..................Mod - int
+....................Mul - int
+......................Id(i) - int
+......................Id(i) - int
+....................Id(i) - int
+..................Id(i) - int
+..............Id(i) - int
+............Id(i) - int
+..........Rshift - int
+............Lshift - int
+..............Id(i) - int
+..............Id(i) - int
+............Id(i) - int
+......Return
+........ParseArgs - int
+..........Id(args) - undef
+..........Id(i) - int
+......Return
+........ParseArgs - int
+..........Id(args) - undef
+..........Id(args) - undef
+......Return
+........Length - int
+..........Id(args) - undef
+......Return
+........Length - int
+..........Id(i) - int
+......Return
+........Call - int
+..........Id(HojeNaoDa) - (int)
+..........Id(id) - int
+......Return
+........Minus - int
+..........Call - int
+............Id(HojeNaoDa) - (int)
+............Id(id) - int
+......Return
+........Plus - int
+..........Call - int
+............Id(HojeNaoDa) - (int)
+............Id(id) - int
+......Return
+........Not - boolean
+..........Call - int
+............Id(HojeNaoDa) - (int)
+............Id(id) - int
+......Return
+........Call - undef
+..........Id(NaoTaFacil) - undef
+......Return
+........Minus - undef
+..........Call - undef
+............Id(NaoTaFacil) - undef
+......Return
+........Plus - undef
+..........Call - undef
+............Id(NaoTaFacil) - undef
+......Return
+........Not - boolean
+..........Call - undef
+............Id(NaoTaFacil) - undef
+......Return
+........Call - double
+..........Id(MyBad) - (int)
+..........DecLit(1) - int
+......Return
+........Minus - double
+..........Call - double
+............Id(MyBad) - (int)
+............DecLit(1) - int
+......Return
+........Plus - double
+..........Call - double
+............Id(MyBad) - (int)
+............DecLit(1) - int
+......Return
+........Not - boolean
+..........Call - double
+............Id(MyBad) - (int)
+............DecLit(1) - int
+......Return
+........Assign - int
+..........Id(i) - int
+..........Id(b) - boolean
+......Return
+........Minus - int
+..........Id(i) - int
+......Return
+........Plus - int
+..........Id(i) - int
+......Return
+........Not - boolean
+..........Id(i) - int
+..MethodDecl
+....MethodHeader
+......Bool
+......Id(NaoTaFacil)
+......MethodParams
+........ParamDecl
+..........Int
+..........Id(id)
+....MethodBody
+..MethodDecl
+....MethodHeader
+......Double
+......Id(MyBad)
+......MethodParams
+........ParamDecl
+..........Int
+..........Id(id)
+....MethodBody
