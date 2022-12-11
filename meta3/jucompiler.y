@@ -50,7 +50,7 @@
 %token DOUBLE
 %token STRING
 /* %token PRINT */
-%token PARSEINT
+/* %token PARSEINT */
 /* %token ASSIGN */
 /* %token GT */
 /* %token MOD */
@@ -60,7 +60,7 @@
 /* %token XOR */
 /* %token LSHIFT */
 /* %token RSHIFT */
-%token DOTLENGTH
+/* %token DOTLENGTH */
 
 
 %union {
@@ -69,7 +69,7 @@
     struct token_container* tk;
 }
 
-%token <tk> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED PLUS MINUS STAR DIV MOD ASSIGN RETURN PRINT EQ GT GE LT LE AND OR NOT NE LSHIFT RSHIFT XOR
+%token <tk> ID STRLIT REALLIT INTLIT BOOLLIT RESERVED PLUS MINUS STAR DIV MOD ASSIGN RETURN PRINT EQ GT GE LT LE AND OR NOT NE LSHIFT RSHIFT XOR DOTLENGTH PARSEINT
 
 %type <tree> Program Aux1 Aux2 MethodDecl FieldDecl Type MethodHeader Aux3 FormalParams Aux4 MethodBody Aux5 VarDecl Aux6 Statement Aux7 StatementPrint MethodInvocation MethodInvocation2 MethodInvocationExpr Assignment ParseArgs Expr Expr2
 
@@ -284,7 +284,7 @@ Assignment:
         ;
 
 ParseArgs:    
-        PARSEINT LPAR ID LSQ Expr RSQ RPAR          {$$ = create_node("ParseArgs", NULL, add_brother(create_node("Id", $3, NULL), $5));}
+        PARSEINT LPAR ID LSQ Expr RSQ RPAR          {$$ = create_node("ParseArgs", $1, add_brother(create_node("Id", $3, NULL), $5));}
     |   PARSEINT LPAR error RPAR                    {$$ = NULL;syntax_error_found = 1;}
     ;
 
@@ -318,7 +318,7 @@ Expr2:
     |   MethodInvocation        {$$ = $1;}
     |   ParseArgs               {$$ = $1;}
     |   ID                      {$$ = create_node("Id", $1, NULL);}
-    |   ID DOTLENGTH            {$$ = create_node("Length", NULL, create_node("Id", $1, NULL));}
+    |   ID DOTLENGTH            {$$ = create_node("Length", $2, create_node("Id", $1, NULL));}
     |   INTLIT                  {$$ = create_node("DecLit", $1, NULL);}
     |   REALLIT                 {$$ = create_node("RealLit", $1, NULL);}
     |   BOOLLIT                 {$$ = create_node("BoolLit", $1, NULL);}

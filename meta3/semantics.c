@@ -277,20 +277,7 @@ void handle_method_body(Table* target, Node* root){
         root->anotation = init_param("String");
         // return;
     }
-    if (strcmp(root->type, "Eq") == 0 ||
-        strcmp(root->type, "Ne") == 0 ||
-        strcmp(root->type, "Gt") == 0 ||
-        strcmp(root->type, "Ge") == 0 ||
-        strcmp(root->type, "Lt") == 0 ||
-        strcmp(root->type, "Le") == 0 ||
-        strcmp(root->type, "And") == 0 ||
-        strcmp(root->type, "Or") == 0 ||
-        strcmp(root->type, "Xor") == 0 ||
-        strcmp(root->type, "Not") == 0 ||
-        strcmp(root->type, "BoolLit") == 0){
-        root->anotation = init_param("boolean");
-        // return;
-    }
+    
 
     Node * aux = root->son;
     if (strcmp(root->type, "Call") == 0)
@@ -300,7 +287,41 @@ void handle_method_body(Table* target, Node* root){
         handle_method_body(target, aux);
         aux = aux->brother;
     }
+    if (strcmp(root->type, "Not") == 0 ||
+        strcmp(root->type, "BoolLit") == 0){
+        root->anotation = init_param("boolean");
+    }
+    if (strcmp(root->type, "Eq") == 0 ||
+        strcmp(root->type, "Ne") == 0 ||
+        strcmp(root->type, "Gt") == 0 ||
+        strcmp(root->type, "Ge") == 0 ||
+        strcmp(root->type, "Lt") == 0 ||
+        strcmp(root->type, "Le") == 0 ||
+        strcmp(root->type, "And") == 0 ||
+        strcmp(root->type, "Or") == 0 ||
+        strcmp(root->type, "Xor") == 0){
+        root->anotation = init_param("boolean");
 
+        char *type1 = root->son->anotation->param;
+        char *type2 = root->son->brother->anotation->param;
+        if (strcmp(type1, "none") == 0 || strcmp(type2, "none") == 0){
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            root->anotation = init_param("boolean");
+        }else if (strcmp(type1, type2) == 0 && (strcmp(type1, "boolean") == 0 || strcmp(type1, "int") == 0 || strcmp(type1, "double") == 0)){}
+        else if ((strcmp(type1, "int") == 0 && strcmp(type2, "double") == 0) ||
+                (strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){}
+        else{
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            // root->anotation = init_param("undef");
+        }
+
+        
+        if (strcmp(root->type, "Xor") == 0 && strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0)
+            root->anotation = init_param("int");
+        // return;
+    }
     if (strcmp(root->type, "Assign") == 0){
         char* type1 = root->son->anotation->param;
         char* type2 = root->son->brother->anotation->param;
@@ -363,6 +384,12 @@ void handle_method_body(Table* target, Node* root){
                 root->value->line, root->value->pos, root->value->string, type1, type2);
 
     }
+    if (strcmp(root->type, "If") == 0) {
+        if (strcmp(root->son->anotation->param, "boolean") != 0){
+            printf("Line %d, col %d: Incompatible type %s in if statement\n",
+            root->son->value->line, root->son->value->pos, root->son->anotation->param);
+        }
+    }
     if (strcmp(root->type, "Lshift") == 0 ||
         strcmp(root->type, "Rshift") == 0){
         
@@ -371,22 +398,53 @@ void handle_method_body(Table* target, Node* root){
     }
     if (strcmp(root->type, "Return") == 0){
         
+        
         Node* aux = root->son;
         char* given_param = "void";
         if (aux != NULL)
             given_param = aux->anotation->param;
-
-        if (strcmp(given_param, target->elems->type) != 0)
+        
+        // printf("%s %s\n",given_param ,target->elems->type);
+        
+        if (strcmp(target->elems->type, "void") == 0 && aux != NULL){
             printf("Line %d, col %d: Incompatible type %s in %s statement\n",
                 aux->value->line, aux->value->pos, given_param, root->value->string);
+        }else if (strcmp(target->elems->type, "double") == 0 && strcmp(given_param, "int") == 0)
+        {  
+        }else if (strcmp(given_param, target->elems->type) != 0 && aux != NULL){
+            printf("Line %d, col %d: Incompatible type %s in %s statement\n",
+                aux->value->line, aux->value->pos, given_param, root->value->string);
+        }else if (strcmp(target->elems->type, "void") != 0 && aux == NULL){
+            printf("Line %d, col %d: Incompatible type void in %s statement\n",
+                root->value->line, root->value->pos, root->value->string);
+        }
+            
     }
     if (strcmp(root->type, "Print") == 0){
         
         Node* aux = root->son;
 
-        if (strcmp(aux->anotation->param, "undef") == 0)
+        if (strcmp(aux->anotation->param, "undef") == 0 || strcmp(aux->anotation->param, "String[]") == 0)
             printf("Line %d, col %d: Incompatible type %s in %s statement\n",
                 aux->value->line, aux->value->pos, aux->anotation->param, root->value->string);
+    }
+    if (strcmp(root->type, "Length") == 0){
+
+        Node* aux = root->son;
+
+        if (strcmp(aux->anotation->param, "undef") == 0 || strcmp(aux->anotation->param, "String[]") != 0)
+            printf("Line %d, col %d: Operator %s cannot be applied to type %s\n",
+                root->value->line, root->value->pos, root->value->string, aux->anotation->param);
+    }
+    if (strcmp(root->type, "ParseArgs") == 0){
+
+        Node* aux = root->son;
+        char *type1 = root->son->anotation->param;
+        char *type2 = root->son->brother->anotation->param;
+        
+        if (strcmp(type1, "String[]") != 0 || strcmp(type2, "int") != 0)
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                root->value->line, root->value->pos, root->value->string, type1, type2);
     }
     if (strcmp(root->type, "Call") == 0){
 

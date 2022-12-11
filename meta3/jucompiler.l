@@ -135,13 +135,13 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 {XOR}                       {if(show_tokens)printf("XOR\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return XOR;}}
 {BOOL}                      {if(show_tokens)printf("BOOL\n");pos+=yyleng;if(return_stf)return BOOL;}
 {CLASS}                     {if(show_tokens)printf("CLASS\n");pos+=yyleng;if(return_stf)return CLASS;}
-{DOTLENGTH}                 {if(show_tokens)printf("DOTLENGTH\n");pos+=yyleng;if(return_stf)return DOTLENGTH;}
+{DOTLENGTH}                 {if(show_tokens)printf("DOTLENGTH\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return DOTLENGTH;}}
 {DOUBLE}                    {if(show_tokens)printf("DOUBLE\n");pos+=yyleng;if(return_stf)return DOUBLE;}
 {ELSE}                      {if(show_tokens)printf("ELSE\n");pos+=yyleng;if(return_stf)return ELSE;}
 {IF}                        {if(show_tokens)printf("IF\n");pos+=yyleng;if(return_stf)return IF;}
 {INT}                       {if(show_tokens)printf("INT\n");pos+=yyleng;if(return_stf)return INT;}
 {PRINT}                     {if(show_tokens)printf("PRINT\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return PRINT;}}
-{PARSEINT}                  {if(show_tokens)printf("PARSEINT\n");pos+=yyleng;if(return_stf)return PARSEINT;}
+{PARSEINT}                  {if(show_tokens)printf("PARSEINT\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return PARSEINT;}}
 {PUBLIC}                    {if(show_tokens)printf("PUBLIC\n");pos+=yyleng;if(return_stf)return PUBLIC;}
 {RETURN}                    {if(show_tokens)printf("RETURN\n");pos+=yyleng;if(return_stf){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);yylval.tk->is_to_show=0;return RETURN;}}
 {STATIC}                    {if(show_tokens)printf("STATIC\n");pos+=yyleng;if(return_stf)return STATIC;}
