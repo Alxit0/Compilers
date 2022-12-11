@@ -95,7 +95,7 @@ Params_node* get_call_needed_params(Node* node, Table* table, int check_find){
     return head;
 }
 
-Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_params, int found){
+Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_params, int found, int exact_match){
     if (table == NULL){
         if (found > 1){
             printf("Line %d, col %d: Reference to method %s", id->line, id->pos, id->string);
@@ -108,6 +108,8 @@ Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_pa
             printf(" is ambiguous\n");
             return NULL;
         }else{
+            if (id->line == -1)
+                return NULL;
             printf("Line %d, col %d: Cannot find symbol %s", id->line, id->pos, id->string);
             if (needed_params == NULL){
                 printf("()\n");
@@ -140,7 +142,9 @@ Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_pa
             return aux;
         aux = aux->next;
     }
-
+    if (exact_match == 1)
+        return find_method(table->parent, id, needed_params, found, exact_match);
+    
     aux = table->elems;
     int possible_methods = 0;
     Table_Node* resp;
@@ -171,7 +175,7 @@ Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_pa
         return resp;
     }
 
-    return find_method(table->parent, id, needed_params, found+possible_methods);
+    return find_method(table->parent, id, needed_params, found+possible_methods, exact_match);
 }
 
 
@@ -197,7 +201,8 @@ void analiza_programa(Node* root, int show_tables){
         
         if (strcmp(aux->type, "MethodDecl") == 0){
             Table* aux2 = analiza_method_decl(aux, class_table);
-            add_table(table_list, aux2, "method");
+            if (aux2 != NULL)
+                add_table(table_list, aux2, "method");
         }
         aux = aux->brother;
     }
@@ -240,6 +245,21 @@ Table* analiza_method_decl(Node* root, Table* class_table){
         aux = aux->brother;
     }
 
+    Table_Node* temp = find_method(
+            class_table,
+            create_tk_cont(method_table->name, -1, -1),
+            method_table->params_head, 
+            0, 1);
+    
+    if (temp != NULL){
+        TokenContainer* info = methodHeader->son->brother->value;
+        printf("Line %d, col %d: Symbol %s", 
+            info->line, info->pos, info->string);
+        method_table->params_head->is_method_args = 1;
+        print_params(method_table->params_head);
+        printf(" already defined\n");
+        return NULL;
+    }
     Table_Node * aux2 = add_element(class_table, create_tk_cont(method_table->name, -1, -1), methodHeader->son->type, "", 0);
     free(aux2->param);
     aux2->param = method_table->params_head;
@@ -570,7 +590,7 @@ void handle_method_body(Table* target, Node* root){
     if (strcmp(root->type, "Call") == 0){
 
         Params_node* needed_params = get_call_needed_params(root, target, 0);
-        Table_Node* called_method = find_method(target, root->son->value, needed_params, 0);
+        Table_Node* called_method = find_method(target, root->son->value, needed_params, 0, 0);
 
         TokenContainer* temp = root->son->value;
 
