@@ -1,3 +1,5 @@
+/* Alexandre Silva Regalado 2020212059 */
+/* Martim António Aldeia Neves 2020232499 */
 #include "table_list.h"
 
 #include <stdio.h>
