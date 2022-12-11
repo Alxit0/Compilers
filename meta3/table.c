@@ -137,9 +137,10 @@ void print_method_table(Table* target){
     }
 }
 
-Params_node* procura_tabela_char(TokenContainer* id, Table* table) {
+Params_node* procura_tabela_char(TokenContainer* id, Table* table, int check_find) {
     if (table == NULL){
-        printf("Line %d, col %d: Cannot find symbol %s\n", id->line, id->pos, id->string);
+        if (check_find == 1)
+            printf("Line %d, col %d: Cannot find symbol %s\n", id->line, id->pos, id->string);
         return init_param("undef");
     }
     
@@ -159,7 +160,7 @@ Params_node* procura_tabela_char(TokenContainer* id, Table* table) {
         }
         aux = aux->next;
     }
-    return procura_tabela_char(id, table->parent);
+    return procura_tabela_char(id, table->parent, check_find);
 }
 
 

@@ -68,7 +68,7 @@ int compare_parms_diferent(Params_node* pr1, Params_node* pr2){
     return 0;
 }
 
-Params_node* get_call_needed_params(Node* node, Table* table){
+Params_node* get_call_needed_params(Node* node, Table* table, int check_find){
     Node * aux = node->son->brother;
     Params_node* head = NULL;
     Params_node* tail = NULL;
@@ -78,7 +78,7 @@ Params_node* get_call_needed_params(Node* node, Table* table){
     while (aux)
     {
         if (strcmp(aux->type, "Id") == 0){
-            temp = procura_tabela_char(aux->value, table);
+            temp = procura_tabela_char(aux->value, table, check_find);
         }else{
             temp = aux->anotation;
         }
@@ -176,7 +176,7 @@ Table_Node* find_method(Table* table, TokenContainer* id, Params_node* needed_pa
 
 
 
-void analiza_programa(Node* root){
+void analiza_programa(Node* root, int show_tables){
     if (root == NULL)
         return;
     
@@ -205,8 +205,10 @@ void analiza_programa(Node* root){
     // update_tree(root, table_list);
     generate_tree(root, table_list);
     // printf("Ola")
-    print_table_list(table_list);
-    print_anoted_tree(root, 0);
+    if (show_tables == 1){
+        print_table_list(table_list);
+        print_anoted_tree(root, 0);
+    }
     // print_class_table(class_table);
 }
 
@@ -262,7 +264,7 @@ void handle_method_body(Table* target, Node* root){
         return;
     }
     if (strcmp(root->type, "Id") == 0) {
-        root->anotation = procura_tabela_char(root->value, target);
+        root->anotation = procura_tabela_char(root->value, target, 1);
         // return;
     }
     if (strcmp(root->type, "DecLit") * 
@@ -274,23 +276,51 @@ void handle_method_body(Table* target, Node* root){
     if (strcmp(root->type, "RealLit") == 0){
         root->anotation = init_param("double");
         
-        // //convert string to float
-        // char * numero_aux = strdup(root->value->string);
-        // for (int i=0; i<strlen(numero_aux); i++){
-        //     if (numero_aux[i] == '_'){
-        //         for (int j=i; j<strlen(numero_aux);j++){
-        //             *(numero_aux+j) = *(numero_aux+j+1);
-        //         }
-        //         i--;
-        //     }
-        // }
-        // // printf("%s\n", numero_aux);
-        // char* pointer = NULL;
-        // long numero = strtol(numero_aux, &pointer, 10);
-        // if (numero > 2147483647 || numero < -2147483648)
-        //     printf("Line %d, col %d: Number %s out of bounds\n",
-        //     root->value->line, root->value->pos, root->value->string);
-        // // printf("float value : %4.8f\n", atof(root->value->string));
+        //convert string to float
+        char * numero_aux = strdup(root->value->string);
+        for (int i=0; i<strlen(numero_aux); i++){
+            if (numero_aux[i] == '_'){
+                for (int j=i; j<strlen(numero_aux);j++){
+                    *(numero_aux+j) = *(numero_aux+j+1);
+                }
+                i--;
+            }
+        }
+        // printf("%s\n", numero_aux);
+        
+        if (0){}
+        else{ 
+            long double numero = strtod(numero_aux, NULL);
+            if ((strcmp(numero_aux, "0.") == 0 
+                || strcmp(numero_aux, "0.0") == 0
+                || strcmp(numero_aux, "0e0") == 0)){}
+            else if (numero > 1.7976931348623157E308 || numero < 4.940656458412464E-324){
+                printf("Line %d, col %d: Number %s out of bounds\n",
+                root->value->line, root->value->pos, root->value->string);
+            }
+            // printf("float value : %4.8f\n", atof(root->value->string));
+        }
+    }
+    if (strcmp(root->type, "DecLit") == 0){
+        root->anotation = init_param("int");
+        
+        //convert string to float
+        char * numero_aux = strdup(root->value->string);
+        for (int i=0; i<strlen(numero_aux); i++){
+            if (numero_aux[i] == '_'){
+                for (int j=i; j<strlen(numero_aux);j++){
+                    *(numero_aux+j) = *(numero_aux+j+1);
+                }
+                i--;
+            }
+        }
+        // printf("%s\n", numero_aux);
+        long numero = strtol(numero_aux, NULL, 10);
+        if (numero > 2147483647 || numero < -2147483648){
+            printf("Line %d, col %d: Number %s out of bounds\n",
+            root->value->line, root->value->pos, root->value->string);
+        }
+        // printf("float value : %4.8f\n", atof(root->value->string));
     }
     if (strcmp(root->type, "StrLit") == 0){
         root->anotation = init_param("String");
@@ -317,12 +347,40 @@ void handle_method_body(Table* target, Node* root){
     if (strcmp(root->type, "BoolLit") == 0){
         root->anotation = init_param("boolean");
     }
-    if (strcmp(root->type, "Eq") == 0 ||
-        strcmp(root->type, "Ne") == 0 ||
-        strcmp(root->type, "Gt") == 0 ||
+    if (strcmp(root->type, "Gt") == 0 ||
         strcmp(root->type, "Ge") == 0 ||
         strcmp(root->type, "Lt") == 0 ||
-        strcmp(root->type, "Le") == 0 ||
+        strcmp(root->type, "Le") == 0)
+        {
+        root->anotation = init_param("boolean");
+
+        char *type1 = root->son->anotation->param;
+        char *type2 = root->son->brother->anotation->param;
+        if (strcmp(type1, "none") == 0 || strcmp(type2, "none") == 0){
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            root->anotation = init_param("boolean");
+        }else if(strcmp(type1, type2) == 0 && strcmp(type1, "double") == 0 && strcmp(root->type, "Xor") == 0){
+            
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            root->anotation = init_param("undef");
+        }
+        else if (strcmp(type1, type2) == 0 && (strcmp(type1, "int") == 0 || strcmp(type1, "double") == 0)){}
+        else if ((strcmp(type1, "int") == 0 && strcmp(type2, "double") == 0) || (strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){}
+        else{
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            // root->anotation = init_param("undef");
+        }
+
+        
+        if (strcmp(root->type, "Xor") == 0 && strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0)
+            root->anotation = init_param("int");
+        // return;
+    }
+    if (strcmp(root->type, "Eq") == 0 ||
+        strcmp(root->type, "Ne") == 0 ||
         strcmp(root->type, "And") == 0 ||
         strcmp(root->type, "Or") == 0 ||
         strcmp(root->type, "Xor") == 0){
@@ -334,9 +392,14 @@ void handle_method_body(Table* target, Node* root){
             printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
                 root->value->line, root->value->pos, root->value->string, type1, type2);
             root->anotation = init_param("boolean");
-        }else if (strcmp(type1, type2) == 0 && (strcmp(type1, "boolean") == 0 || strcmp(type1, "int") == 0 || strcmp(type1, "double") == 0)){}
-        else if ((strcmp(type1, "int") == 0 && strcmp(type2, "double") == 0) ||
-                (strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){}
+        }else if(strcmp(type1, type2) == 0 && strcmp(type1, "double") == 0 && strcmp(root->type, "Xor") == 0){
+            
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            root->anotation = init_param("undef");
+        }
+        else if (strcmp(type1, type2) == 0 && (strcmp(type1, "boolean") == 0 || strcmp(type1, "int") == 0 || strcmp(type1, "double") == 0)){}
+        else if ((strcmp(type1, "int") == 0 && strcmp(type2, "double") == 0) || (strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){}
         else{
             printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
                 root->value->line, root->value->pos, root->value->string, type1, type2);
@@ -355,7 +418,7 @@ void handle_method_body(Table* target, Node* root){
         // printf("%s", root->value->string);
         if ((strcmp(type1, "double") == 0 && strcmp(type2, "int") == 0)){
             // pass
-        }else if (strcmp(type1, type2) != 0){
+        }else if (strcmp(type1, type2) != 0 || (strcmp(type1, type2) == 0 && strcmp(type1, "String[]") == 0)){
             printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n", 
                 root->value->line, root->value->pos, root->value->string, type1, type2);
         }
@@ -409,17 +472,38 @@ void handle_method_body(Table* target, Node* root){
                 root->value->line, root->value->pos, root->value->string, type1, type2);
 
     }
-    if (strcmp(root->type, "If") == 0) {
+    if (strcmp(root->type, "If") == 0 ||
+        strcmp(root->type, "While") == 0) {
+        if (strcmp(root->son->type, "Lshift") == 0 || strcmp(root->son->type, "Rshift") == 0){
+            char *type1 = root->son->son->anotation->param;
+            char *type2 = root->son->son->brother->anotation->param;
+            if (strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0){
+                root->son->anotation = init_param("int");
+        }
+        }
+        char* temp;
+        if (strcmp(root->type, "If") == 0)temp = "if";
+        else if (strcmp(root->type, "While") == 0)temp = "while";
+
         if (strcmp(root->son->anotation->param, "boolean") != 0){
-            printf("Line %d, col %d: Incompatible type %s in if statement\n",
-            root->son->value->line, root->son->value->pos, root->son->anotation->param);
+            printf("Line %d, col %d: Incompatible type %s in %s statement\n",
+            root->son->value->line, root->son->value->pos, root->son->anotation->param, temp);
         }
     }
     if (strcmp(root->type, "Lshift") == 0 ||
         strcmp(root->type, "Rshift") == 0){
         
-
-        root->anotation = init_param("none");
+        root->anotation = init_param("int");
+        char *type1 = root->son->anotation->param;
+        char *type2 = root->son->brother->anotation->param;
+        // printf("Ola\n");
+        if (strcmp(type1, type2) == 0 && strcmp(type1, "int") == 0){
+            root->son->anotation = init_param("int");
+        }else{
+            printf("Line %d, col %d: Operator %s cannot be applied to types %s, %s\n",
+                root->value->line, root->value->pos, root->value->string, type1, type2);
+            root->anotation = init_param("undef");
+        }
     }
     if (strcmp(root->type, "Return") == 0){
         
@@ -449,7 +533,8 @@ void handle_method_body(Table* target, Node* root){
         
         Node* aux = root->son;
 
-        if (strcmp(aux->anotation->param, "undef") == 0 || strcmp(aux->anotation->param, "String[]") == 0)
+        if (strcmp(aux->anotation->param, "undef") == 0 || strcmp(aux->anotation->param, "String[]") == 0
+            || strcmp(aux->anotation->param, "void") == 0)
             printf("Line %d, col %d: Incompatible type %s in %s statement\n",
                 aux->value->line, aux->value->pos, aux->anotation->param, root->value->string);
     }
@@ -473,7 +558,7 @@ void handle_method_body(Table* target, Node* root){
     }
     if (strcmp(root->type, "Call") == 0){
 
-        Params_node* needed_params = get_call_needed_params(root, target);
+        Params_node* needed_params = get_call_needed_params(root, target, 0);
         Table_Node* called_method = find_method(target, root->son->value, needed_params, 0);
 
         TokenContainer* temp = root->son->value;

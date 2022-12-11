@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "arvore.h": "c"
+        "arvore.h": "c",
+        "table.h": "c"
     }
 }

@@ -98,7 +98,7 @@ RESERVED            "++"|"--"|"null"|"Integer"|"System"|"abstract"|"abstract"|"a
 <COMMENT_BLOCK>.                        {pos++;}
 
 "\""                                            {BEGIN STRING_STATE;in_state=1;pos_extra = pos; pos++;error_found=false;in_state=2;string_pos=0;}
-<STRING_STATE>\"                                      {BEGIN 0; in_state=0;pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);if(return_stf && !error_found){yylval.tk = create_tk_cont(strdup(yytext), pos-yyleng, line);return STRLIT;}}
+<STRING_STATE>\"                                      {BEGIN 0; in_state=0;pos = pos + yyleng;string_buff[string_pos ++]='\0';if(show_tokens && !error_found)printf("STRLIT(\"%s\")\n", string_buff);if(return_stf && !error_found){yylval.tk = create_tk_cont(strdup(string_buff), pos-yyleng, line);return STRLIT;}}
 <STRING_STATE>"\\"({PARAGRAPH_ESCAPE})                {BEGIN 0; printf("Line %d, col %d: invalid escape sequence (\\)\n", line, pos); printf("Line %d, col %d: unterminated string literal\n", line, pos_extra); line++; pos = 1;}
 <STRING_STATE>"\\"[^"fnrt\\\""]                       {error_found=true; printf("Line %d, col %d: invalid escape sequence (%s)\n", line, pos, yytext);pos+=2;}
 <STRING_STATE>"\\"["fnrt\\\""]                        {pos+=2;string_buff[string_pos++]=yytext[0];string_buff[string_pos++]=yytext[1];}
@@ -194,13 +194,15 @@ int main(int argc, char *argv[]) {
             return_stf = true;
             yyparse();
             if (!syntax_error_found)
-                analiza_programa(root);
+                analiza_programa(root, 1);
         }
     }
     else {
         return_stf = true;
         yyparse();
         yylex();
+        if (!syntax_error_found)
+            analiza_programa(root, 0);
     }
 
     cleanTree(root);

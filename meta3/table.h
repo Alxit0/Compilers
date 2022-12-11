@@ -35,5 +35,5 @@ Table_Node * add_element(Table* target, TokenContainer* id, char* type, char* pa
 void print_class_table(Table* target);
 void print_method_table(Table* target);
 void print_params(Params_node* head);
-Params_node* procura_tabela_char(TokenContainer* id, Table* table);
+Params_node* procura_tabela_char(TokenContainer* id, Table* table, int check_find);
 #endif
